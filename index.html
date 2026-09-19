@@ -20,24 +20,24 @@
         extend: {
           colors: {
             brand: {
-              coral: '#FF8B8B',
-              coralHover: '#f07474',
-              peach: '#FFD1D1',
-              lightPeach: '#FFF0F0',
+              blue: '#2563EB',
+              blueHover: '#1D4ED8',
+              sky: '#BFDBFE',
+              lightBlue: '#EFF6FF',
               yellow: '#FFD93D',
-              cream: '#FFF9F9',
-              dark: '#4A4040',
-              muted: '#7A6E6E',
-              border: '#FFE3E3'
+              cream: '#F4F8FD',
+              dark: '#1E293B',
+              muted: '#64748B',
+              border: '#DBEAFE'
             }
           },
           fontFamily: {
             sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif']
           },
           boxShadow: {
-            soft: '0 8px 24px -4px rgba(255, 139, 139, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04)',
-            card: '0 10px 30px -5px rgba(255, 139, 139, 0.15)',
-            glow: '0 0 20px rgba(255, 139, 139, 0.35)'
+            soft: '0 8px 24px -4px rgba(37, 99, 235, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04)',
+            card: '0 10px 30px -5px rgba(37, 99, 235, 0.15)',
+            glow: '0 0 20px rgba(37, 99, 235, 0.35)'
           }
         }
       }
@@ -54,8 +54,8 @@
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      background-color: #FFF9F9;
-      color: #4A4040;
+      background-color: #F4F8FD;
+      color: #1E293B;
       -webkit-tap-highlight-color: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar {
@@ -63,7 +63,7 @@
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background-color: #FFD1D1;
+      background-color: #BFDBFE;
       border-radius: 9999px;
     }
     .touch-btn {
@@ -79,45 +79,45 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-[#FFF9F9] text-[#4A4040] selection:bg-[#FFD1D1]">
+<body class="min-h-screen flex flex-col bg-[#F4F8FD] text-[#1E293B] selection:bg-[#BFDBFE]">
 
   <!-- Top Banner / Navigation -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#FFE3E3] shadow-sm">
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#DBEAFE] shadow-sm">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3 cursor-pointer" onclick="app.goHome()">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#FF8B8B] to-[#FFD93D] flex items-center justify-center text-white shadow-md text-lg animate-float">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#2563EB] via-[#3B82F6] to-[#38BDF8] flex items-center justify-center text-white shadow-md text-lg animate-float">
           <i class="fa-solid fa-envelope-open-heart"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg sm:text-xl text-[#4A4040] tracking-tight flex items-center gap-2">
+          <h1 class="font-bold text-lg sm:text-xl text-[#1E293B] tracking-tight flex items-center gap-2">
             우리반 칭찬우체통
-            <span id="headerClassBadge" class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-[#FFF0F0] text-[#FF8B8B] font-medium border border-[#FFD1D1]">
+            <span id="headerClassBadge" class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#2563EB] font-medium border border-[#BFDBFE]">
               행복한 우리반
             </span>
           </h1>
-          <p class="text-[11px] text-[#7A6E6E] hidden sm:block">서로에게 따뜻한 마음과 격려를 전해요</p>
+          <p class="text-[11px] text-[#64748B] hidden sm:block">서로에게 따뜻한 마음과 격려를 전해요</p>
         </div>
       </div>
 
       <!-- Right Header Actions -->
       <div class="flex items-center gap-2 sm:gap-3">
         <!-- Firebase Status Indicator -->
-        <button id="fbStatusBtn" onclick="app.openFirebaseModal()" class="px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#FFF0F0] text-[#7A6E6E] hover:bg-[#FFE3E3] border border-[#FFE3E3]">
-          <span id="fbStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <button id="fbStatusBtn" onclick="app.openFirebaseModal()" class="px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#EFF6FF] text-[#64748B] hover:bg-[#DBEAFE] border border-[#DBEAFE]">
+          <span id="fbStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span id="fbStatusText" class="hidden md:inline">로컬 모드</span>
-          <i class="fa-solid fa-gear text-xs ml-0.5 text-[#FF8B8B]"></i>
+          <i class="fa-solid fa-gear text-xs ml-0.5 text-[#2563EB]"></i>
         </button>
 
         <!-- Current User Info (When logged in) -->
-        <div id="userHeaderBadge" class="hidden items-center gap-2 pl-2 border-l border-[#FFE3E3]">
-          <div class="flex items-center gap-2 bg-[#FFF0F0] px-3 py-1 rounded-2xl border border-[#FFD1D1]">
+        <div id="userHeaderBadge" class="hidden items-center gap-2 pl-2 border-l border-[#DBEAFE]">
+          <div class="flex items-center gap-2 bg-[#EFF6FF] px-3 py-1 rounded-2xl border border-[#BFDBFE]">
             <span id="userHeaderAvatar" class="text-lg">🌸</span>
             <div class="text-left leading-tight">
-              <div id="userHeaderName" class="text-xs sm:text-sm font-bold text-[#4A4040]">학생 이름</div>
-              <div id="userHeaderScoreBadge" class="text-[11px] text-[#FF8B8B] font-medium">칭찬 열매 0개 ⭐</div>
+              <div id="userHeaderName" class="text-xs sm:text-sm font-bold text-[#1E293B]">학생 이름</div>
+              <div id="userHeaderScoreBadge" class="text-[11px] text-[#2563EB] font-medium">칭찬 열매 0개 ⭐</div>
             </div>
           </div>
-          <button onclick="app.logout()" title="로그아웃" class="touch-btn w-9 h-9 rounded-xl bg-white border border-[#FFE3E3] text-[#7A6E6E] hover:text-[#FF8B8B] hover:bg-[#FFF0F0] flex items-center justify-center transition">
+          <button onclick="app.logout()" title="로그아웃" class="touch-btn w-9 h-9 rounded-xl bg-white border border-[#DBEAFE] text-[#64748B] hover:text-[#2563EB] hover:bg-[#EFF6FF] flex items-center justify-center transition">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
@@ -129,80 +129,80 @@
   <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 pb-24">
     
     <!-- Notice / Guide Bar -->
-    <div id="quickGuideBanner" class="mb-5 bg-gradient-to-r from-[#FFF0F0] to-[#FFF9F2] border border-[#FFD1D1] rounded-2xl p-3.5 px-4 flex items-center justify-between shadow-soft">
+    <div id="quickGuideBanner" class="mb-5 bg-gradient-to-r from-[#EFF6FF] via-[#F0F7FF] to-[#E0F2FE] border border-[#BFDBFE] rounded-2xl p-3.5 px-4 flex items-center justify-between shadow-soft">
       <div class="flex items-center gap-3">
         <span class="text-xl">💌</span>
-        <p class="text-xs sm:text-sm text-[#4A4040]">
-          <strong class="font-semibold text-[#FF8B8B]">오늘의 약속:</strong> 친구의 장점을 발견하고 하루 최대 3번 따뜻한 칭찬 편지를 보내보세요!
+        <p class="text-xs sm:text-sm text-[#1E293B]">
+          <strong class="font-semibold text-[#2563EB]">오늘의 약속:</strong> 친구의 장점을 발견하고 하루 최대 3번 따뜻한 칭찬 편지를 보내보세요!
         </p>
       </div>
-      <button onclick="document.getElementById('quickGuideBanner').remove()" class="text-[#7A6E6E] hover:text-[#4A4040] text-xs p-1">
+      <button onclick="document.getElementById('quickGuideBanner').remove()" class="text-[#64748B] hover:text-[#1E293B] text-xs p-1">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
-    <!-- VIEW 1: LOGIN / USER SELECTOR -->
+    <!-- VIEW 1: LOGIN / USER SELECTOR (메인 화면) -->
     <section id="viewLogin" class="w-full max-w-xl mx-auto pt-4 transition-all">
-      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-card border border-[#FFE3E3] text-center">
-        <!-- Cute Icon -->
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-[#FF8B8B] via-[#FFB4B4] to-[#FFD93D] flex items-center justify-center text-white text-3xl shadow-lg mb-4">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-card border border-[#DBEAFE] text-center">
+        <!-- Cute Icon in Blue Gradient -->
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-[#2563EB] via-[#3B82F6] to-[#38BDF8] flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-500/25 mb-4 animate-float">
           📮
         </div>
-        <h2 class="text-2xl font-bold text-[#4A4040] mb-1">우리반 칭찬우체통</h2>
-        <p class="text-xs sm:text-sm text-[#7A6E6E] mb-6">칭찬을 나누고 싶은 내 번호나 역할을 선택해주세요</p>
+        <h2 class="text-2xl font-bold text-[#1E293B] mb-1">우리반 칭찬우체통</h2>
+        <p class="text-xs sm:text-sm text-[#64748B] mb-6">칭찬을 나누고 싶은 내 번호나 역할을 선택해주세요</p>
 
         <!-- Mode Toggle Tabs -->
-        <div class="grid grid-cols-2 p-1 bg-[#FFF0F0] rounded-2xl mb-6 border border-[#FFE3E3]">
-          <button id="tabStudentLogin" onclick="app.switchLoginMode('student')" class="py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#FF8B8B] shadow-sm">
+        <div class="grid grid-cols-2 p-1 bg-[#EFF6FF] rounded-2xl mb-6 border border-[#DBEAFE]">
+          <button id="tabStudentLogin" onclick="app.switchLoginMode('student')" class="py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#2563EB] shadow-sm">
             <i class="fa-solid fa-graduation-cap mr-1.5"></i>학생 로그인
           </button>
-          <button id="tabTeacherLogin" onclick="app.switchLoginMode('teacher')" class="py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]">
+          <button id="tabTeacherLogin" onclick="app.switchLoginMode('teacher')" class="py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B]">
             <i class="fa-solid fa-chalkboard-user mr-1.5"></i>선생님 (관리자)
           </button>
         </div>
 
         <!-- Student Login Sub-view -->
         <div id="studentLoginBox" class="space-y-4 text-left">
-          <label class="block text-xs sm:text-sm font-semibold text-[#4A4040]">
+          <label class="block text-xs sm:text-sm font-semibold text-[#1E293B]">
             1. 내 이름 / 번호 선택하기
           </label>
           <div id="studentSelectionGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-56 overflow-y-auto p-1 custom-scrollbar">
             <!-- Student cards generated via JS -->
           </div>
 
-          <div id="studentPasswordSection" class="hidden mt-4 pt-4 border-t border-[#FFE3E3]">
+          <div id="studentPasswordSection" class="hidden mt-4 pt-4 border-t border-[#DBEAFE]">
             <div class="flex items-center justify-between mb-1.5">
-              <label class="text-xs sm:text-sm font-semibold text-[#4A4040]">
+              <label class="text-xs sm:text-sm font-semibold text-[#1E293B]">
                 2. 4자리 비밀번호 입력
               </label>
-              <span class="text-[11px] text-[#7A6E6E]">(기본: 0000)</span>
+              <span class="text-[11px] text-[#64748B]">(기본: 0000)</span>
             </div>
             
             <!-- Pin Dots Display -->
             <div class="flex justify-center items-center gap-3 py-2 my-1">
-              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
-              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
-              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
-              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-white transition-all"></span>
             </div>
 
             <!-- Virtual Numpad (friendly for tablets & touch screens) -->
             <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto mt-3">
-              <button onclick="app.enterPin('1')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">1</button>
-              <button onclick="app.enterPin('2')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">2</button>
-              <button onclick="app.enterPin('3')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">3</button>
-              <button onclick="app.enterPin('4')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">4</button>
-              <button onclick="app.enterPin('5')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">5</button>
-              <button onclick="app.enterPin('6')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">6</button>
-              <button onclick="app.enterPin('7')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">7</button>
-              <button onclick="app.enterPin('8')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">8</button>
-              <button onclick="app.enterPin('9')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">9</button>
-              <button onclick="app.clearPin()" class="touch-btn h-12 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] active:scale-95 text-xs font-bold text-[#FF8B8B] border border-[#FFD1D1]">지우기</button>
-              <button onclick="app.enterPin('0')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">0</button>
-              <button onclick="app.backspacePin()" class="touch-btn h-12 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] active:scale-95 text-sm text-[#FF8B8B] border border-[#FFD1D1]"><i class="fa-solid fa-delete-left"></i></button>
+              <button onclick="app.enterPin('1')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">1</button>
+              <button onclick="app.enterPin('2')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">2</button>
+              <button onclick="app.enterPin('3')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">3</button>
+              <button onclick="app.enterPin('4')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">4</button>
+              <button onclick="app.enterPin('5')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">5</button>
+              <button onclick="app.enterPin('6')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">6</button>
+              <button onclick="app.enterPin('7')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">7</button>
+              <button onclick="app.enterPin('8')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">8</button>
+              <button onclick="app.enterPin('9')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">9</button>
+              <button onclick="app.clearPin()" class="touch-btn h-12 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] active:scale-95 text-xs font-bold text-[#2563EB] border border-[#BFDBFE]">지우기</button>
+              <button onclick="app.enterPin('0')" class="touch-btn h-12 rounded-xl bg-[#F8FAFC] hover:bg-[#EFF6FF] active:scale-95 text-lg font-bold border border-[#DBEAFE] text-[#1E293B]">0</button>
+              <button onclick="app.backspacePin()" class="touch-btn h-12 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] active:scale-95 text-sm text-[#2563EB] border border-[#BFDBFE]"><i class="fa-solid fa-delete-left"></i></button>
             </div>
 
-            <button onclick="app.submitStudentLogin()" class="touch-btn w-full mt-4 py-3.5 rounded-2xl bg-[#FF8B8B] hover:bg-[#f07474] text-white font-bold shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2">
+            <button onclick="app.submitStudentLogin()" class="touch-btn w-full mt-4 py-3.5 rounded-2xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold shadow-md hover:shadow-lg shadow-blue-500/20 transition-all text-sm sm:text-base flex items-center justify-center gap-2">
               <span>우체통 열기</span>
               <i class="fa-solid fa-key"></i>
             </button>
@@ -211,22 +211,22 @@
 
         <!-- Teacher Login Sub-view -->
         <div id="teacherLoginBox" class="hidden space-y-4 text-left">
-          <div class="p-4 bg-[#FFF0F0] rounded-2xl border border-[#FFD1D1] mb-2">
-            <div class="flex items-center gap-2 text-[#FF8B8B] font-bold text-sm mb-1">
+          <div class="p-4 bg-[#EFF6FF] rounded-2xl border border-[#BFDBFE] mb-2">
+            <div class="flex items-center gap-2 text-[#2563EB] font-bold text-sm mb-1">
               <i class="fa-solid fa-shield-halved"></i>
               <span>선생님 전용 관리 공간</span>
             </div>
-            <p class="text-xs text-[#7A6E6E]">
+            <p class="text-xs text-[#64748B]">
               학생들의 칭찬 점수 관리, 비밀번호 초기화, 전체 칭찬 로그를 모니터링할 수 있습니다. (초기 비밀번호: <strong>1234</strong>)
             </p>
           </div>
 
           <div>
-            <label class="block text-xs sm:text-sm font-semibold text-[#4A4040] mb-1.5">선생님 비밀번호</label>
-            <input type="password" id="teacherPwInput" placeholder="비밀번호 입력 (기본: 1234)" class="w-full px-4 py-3 rounded-2xl border border-[#FFE3E3] focus:outline-none focus:border-[#FF8B8B] focus:ring-2 focus:ring-[#FF8B8B]/20 bg-[#FFF9F9] text-sm" />
+            <label class="block text-xs sm:text-sm font-semibold text-[#1E293B] mb-1.5">선생님 비밀번호</label>
+            <input type="password" id="teacherPwInput" placeholder="비밀번호 입력 (기본: 1234)" class="w-full px-4 py-3 rounded-2xl border border-[#DBEAFE] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 bg-[#F8FAFC] text-sm text-[#1E293B]" />
           </div>
 
-          <button onclick="app.submitTeacherLogin()" class="touch-btn w-full py-3.5 rounded-2xl bg-[#4A4040] hover:bg-[#383030] text-white font-bold shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2">
+          <button onclick="app.submitTeacherLogin()" class="touch-btn w-full py-3.5 rounded-2xl bg-[#1E293B] hover:bg-[#0F172A] text-white font-bold shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2">
             <span>관리자 대시보드 입장</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -237,44 +237,44 @@
     <!-- VIEW 2: STUDENT DASHBOARD -->
     <section id="viewStudent" class="hidden space-y-6">
       <!-- Student Top Hero Card -->
-      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3] relative overflow-hidden">
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#DBEAFE] relative overflow-hidden">
         <div class="absolute -right-6 -bottom-6 text-8xl opacity-10 pointer-events-none select-none">
           💌
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <div id="studentAvatarLarge" class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-[#FFF0F0] to-[#FFE3E3] border-2 border-[#FFD1D1] flex items-center justify-center text-3xl sm:text-4xl shadow-inner">
+            <div id="studentAvatarLarge" class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-[#EFF6FF] to-[#DBEAFE] border-2 border-[#BFDBFE] flex items-center justify-center text-3xl sm:text-4xl shadow-inner">
               🐰
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span id="studentNumberTag" class="px-2.5 py-0.5 rounded-full bg-[#FFF0F0] text-[#FF8B8B] text-xs font-bold border border-[#FFD1D1]">
+                <span id="studentNumberTag" class="px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#2563EB] text-xs font-bold border border-[#BFDBFE]">
                   1번
                 </span>
-                <h2 id="studentNameDisplay" class="text-xl sm:text-2xl font-extrabold text-[#4A4040]">
+                <h2 id="studentNameDisplay" class="text-xl sm:text-2xl font-extrabold text-[#1E293B]">
                   김민준
                 </h2>
               </div>
-              <p class="text-xs sm:text-sm text-[#7A6E6E] mt-1">오늘도 친구들과 따뜻한 하루를 만들어요! ✨</p>
+              <p class="text-xs sm:text-sm text-[#64748B] mt-1">오늘도 친구들과 따뜻한 하루를 만들어요! ✨</p>
             </div>
           </div>
 
           <!-- Score & Daily Limit Badges -->
           <div class="flex items-center gap-3 w-full sm:w-auto">
             <!-- Praise Fruits -->
-            <div class="flex-1 sm:flex-initial bg-[#FFF9F0] border border-[#FFE8A3] px-4 py-2.5 rounded-2xl text-center shadow-sm">
-              <span class="block text-[11px] font-semibold text-[#B8860B]">내가 모은 칭찬 열매</span>
+            <div class="flex-1 sm:flex-initial bg-[#FFFBEB] border border-[#FDE68A] px-4 py-2.5 rounded-2xl text-center shadow-sm">
+              <span class="block text-[11px] font-semibold text-[#B45309]">내가 모은 칭찬 열매</span>
               <div class="flex items-center justify-center gap-1.5 mt-0.5">
-                <span class="text-xl text-[#FFD93D]">⭐</span>
-                <span id="studentScoreCount" class="text-xl font-extrabold text-[#4A4040]">12개</span>
+                <span class="text-xl text-[#F59E0B]">⭐</span>
+                <span id="studentScoreCount" class="text-xl font-extrabold text-[#1E293B]">12개</span>
               </div>
             </div>
 
             <!-- Daily Limit Left -->
-            <div class="flex-1 sm:flex-initial bg-[#FFF0F0] border border-[#FFD1D1] px-4 py-2.5 rounded-2xl text-center shadow-sm">
-              <span class="block text-[11px] font-semibold text-[#FF8B8B]">오늘 칭찬 가능 횟수</span>
+            <div class="flex-1 sm:flex-initial bg-[#EFF6FF] border border-[#BFDBFE] px-4 py-2.5 rounded-2xl text-center shadow-sm">
+              <span class="block text-[11px] font-semibold text-[#2563EB]">오늘 칭찬 가능 횟수</span>
               <div class="flex items-center justify-center gap-1 mt-0.5">
-                <span id="studentDailyLimitBadge" class="text-xl font-extrabold text-[#FF8B8B]">3/3회</span>
+                <span id="studentDailyLimitBadge" class="text-xl font-extrabold text-[#2563EB]">3/3회</span>
               </div>
             </div>
           </div>
@@ -282,17 +282,17 @@
       </div>
 
       <!-- Navigation Tabs for Student Views -->
-      <div class="flex items-center justify-center gap-2 bg-white/70 backdrop-blur p-1.5 rounded-2xl border border-[#FFE3E3] shadow-soft max-w-md mx-auto">
-        <button id="btnStudentTabSend" onclick="app.switchStudentTab('send')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#FF8B8B] text-white shadow-sm flex items-center justify-center gap-1.5">
+      <div class="flex items-center justify-center gap-2 bg-white/70 backdrop-blur p-1.5 rounded-2xl border border-[#DBEAFE] shadow-soft max-w-md mx-auto">
+        <button id="btnStudentTabSend" onclick="app.switchStudentTab('send')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#2563EB] text-white shadow-sm flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-paper-plane"></i>
           <span>칭찬 보내기</span>
         </button>
-        <button id="btnStudentTabInbox" onclick="app.switchStudentTab('inbox')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5">
+        <button id="btnStudentTabInbox" onclick="app.switchStudentTab('inbox')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B] flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-inbox"></i>
           <span>내 칭찬함</span>
-          <span id="inboxUnreadBadge" class="hidden w-2 h-2 rounded-full bg-[#FF8B8B]"></span>
+          <span id="inboxUnreadBadge" class="hidden w-2 h-2 rounded-full bg-[#2563EB]"></span>
         </button>
-        <button id="btnStudentTabRank" onclick="app.switchStudentTab('rank')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5">
+        <button id="btnStudentTabRank" onclick="app.switchStudentTab('rank')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B] flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-tree"></i>
           <span>우리반 현황</span>
         </button>
@@ -300,16 +300,16 @@
 
       <!-- TAB 1: SEND PRAISE -->
       <div id="studentTabSend" class="space-y-6">
-        <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-card border border-[#FFE3E3]">
+        <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-card border border-[#DBEAFE]">
           
           <!-- Step 1: Select Classmate -->
           <div class="mb-6">
             <div class="flex items-center justify-between mb-3">
-              <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">1</span>
+              <label class="text-sm sm:text-base font-bold text-[#1E293B] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold">1</span>
                 칭찬할 친구를 선택해주세요
               </label>
-              <span id="selectedFriendNotice" class="text-xs text-[#FF8B8B] font-semibold">친구를 탭하세요</span>
+              <span id="selectedFriendNotice" class="text-xs text-[#2563EB] font-semibold">친구를 탭하세요</span>
             </div>
             
             <div id="friendGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1 custom-scrollbar">
@@ -319,8 +319,8 @@
 
           <!-- Step 2: Choose Tag / Category -->
           <div class="mb-6">
-            <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2 mb-3">
-              <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">2</span>
+            <label class="text-sm sm:text-base font-bold text-[#1E293B] flex items-center gap-2 mb-3">
+              <span class="w-6 h-6 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold">2</span>
               어떤 점을 칭찬하고 싶나요? (태그 선택)
             </label>
             <div id="praiseTagContainer" class="flex flex-wrap gap-2">
@@ -331,28 +331,28 @@
           <!-- Step 3: Write Message & Quick Templates -->
           <div class="mb-6">
             <div class="flex items-center justify-between mb-2">
-              <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">3</span>
+              <label class="text-sm sm:text-base font-bold text-[#1E293B] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold">3</span>
                 따뜻한 응원의 한마디를 적어주세요
               </label>
-              <span id="charCountDisplay" class="text-xs text-[#7A6E6E]">0 / 150자</span>
+              <span id="charCountDisplay" class="text-xs text-[#64748B]">0 / 150자</span>
             </div>
 
             <!-- Quick Template Chips -->
             <div class="mb-2.5 flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar text-xs">
-              <span class="text-[11px] text-[#7A6E6E] whitespace-nowrap font-medium">추천 문장:</span>
-              <button type="button" onclick="app.applyTemplate('오늘 청소 도와줘서 정말 고마웠어! 🧹')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">청소 도와줘서 고마워</button>
-              <button type="button" onclick="app.applyTemplate('수업 시간에 모르는 걸 친절하게 알려줬어! 💡')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">친절하게 알려줬어</button>
-              <button type="button" onclick="app.applyTemplate('체육 시간에 끝까지 포기하지 않고 멋지게 달렸어! 🏃')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">체육 시간에 멋졌어</button>
-              <button type="button" onclick="app.applyTemplate('항상 밝은 미소로 인사해줘서 기분이 좋아져! 😊')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">밝은 미소 고마워</button>
+              <span class="text-[11px] text-[#64748B] whitespace-nowrap font-medium">추천 문장:</span>
+              <button type="button" onclick="app.applyTemplate('오늘 청소 도와줘서 정말 고마웠어! 🧹')" class="px-2.5 py-1 rounded-xl bg-[#EFF6FF] text-[#1E293B] hover:bg-[#DBEAFE] border border-[#BFDBFE] whitespace-nowrap transition">청소 도와줘서 고마워</button>
+              <button type="button" onclick="app.applyTemplate('수업 시간에 모르는 걸 친절하게 알려줬어! 💡')" class="px-2.5 py-1 rounded-xl bg-[#EFF6FF] text-[#1E293B] hover:bg-[#DBEAFE] border border-[#BFDBFE] whitespace-nowrap transition">친절하게 알려줬어</button>
+              <button type="button" onclick="app.applyTemplate('체육 시간에 끝까지 포기하지 않고 멋지게 달렸어! 🏃')" class="px-2.5 py-1 rounded-xl bg-[#EFF6FF] text-[#1E293B] hover:bg-[#DBEAFE] border border-[#BFDBFE] whitespace-nowrap transition">체육 시간에 멋졌어</button>
+              <button type="button" onclick="app.applyTemplate('항상 밝은 미소로 인사해줘서 기분이 좋아져! 😊')" class="px-2.5 py-1 rounded-xl bg-[#EFF6FF] text-[#1E293B] hover:bg-[#DBEAFE] border border-[#BFDBFE] whitespace-nowrap transition">밝은 미소 고마워</button>
             </div>
 
-            <textarea id="praiseMessageInput" maxlength="150" rows="3" placeholder="친구의 따뜻한 행동, 배려, 멋진 순간을 적어보세요. (예: 오늘 발표할 때 용기 내서 멋지게 말해줘서 감동받았어!)" class="w-full p-4 rounded-2xl border border-[#FFE3E3] focus:outline-none focus:border-[#FF8B8B] focus:ring-2 focus:ring-[#FF8B8B]/20 bg-[#FFF9F9] text-sm text-[#4A4040] leading-relaxed resize-none"></textarea>
+            <textarea id="praiseMessageInput" maxlength="150" rows="3" placeholder="친구의 따뜻한 행동, 배려, 멋진 순간을 적어보세요. (예: 오늘 발표할 때 용기 내서 멋지게 말해줘서 감동받았어!)" class="w-full p-4 rounded-2xl border border-[#DBEAFE] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 bg-[#F8FAFC] text-sm text-[#1E293B] leading-relaxed resize-none"></textarea>
           </div>
 
           <!-- Send Action Button -->
           <div class="pt-2">
-            <button id="btnSendPraiseSubmit" onclick="app.submitPraise()" class="touch-btn w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF8B8B] to-[#ff9e9e] hover:from-[#f07474] hover:to-[#FF8B8B] text-white font-extrabold text-base sm:text-lg shadow-card hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2">
+            <button id="btnSendPraiseSubmit" onclick="app.submitPraise()" class="touch-btn w-full py-4 rounded-2xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white font-extrabold text-base sm:text-lg shadow-card hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 shadow-blue-500/20">
               <i class="fa-solid fa-heart text-amber-200 animate-pulse"></i>
               <span>따뜻한 칭찬 편지 부치기</span>
               <i class="fa-solid fa-paper-plane text-sm"></i>
@@ -365,13 +365,13 @@
       <div id="studentTabInbox" class="hidden space-y-4">
         <div class="flex items-center justify-between px-1">
           <div class="flex items-center gap-2">
-            <h3 class="font-bold text-lg text-[#4A4040]">도착한 칭찬 편지</h3>
-            <span id="inboxTotalCountBadge" class="px-2.5 py-0.5 rounded-full bg-[#FFD1D1] text-[#4A4040] text-xs font-bold">0통</span>
+            <h3 class="font-bold text-lg text-[#1E293B]">도착한 칭찬 편지</h3>
+            <span id="inboxTotalCountBadge" class="px-2.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#1E293B] text-xs font-bold">0통</span>
           </div>
           <!-- Filter / Sort -->
           <div class="flex items-center gap-1 text-xs">
-            <button onclick="app.filterInbox('all')" id="inboxFilterAll" class="px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white">전체</button>
-            <button onclick="app.filterInbox('recent')" id="inboxFilterRecent" class="px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]">최신순</button>
+            <button onclick="app.filterInbox('all')" id="inboxFilterAll" class="px-2.5 py-1 rounded-xl font-bold bg-[#2563EB] text-white">전체</button>
+            <button onclick="app.filterInbox('recent')" id="inboxFilterRecent" class="px-2.5 py-1 rounded-xl text-[#64748B] hover:bg-[#EFF6FF]">최신순</button>
           </div>
         </div>
 
@@ -380,13 +380,13 @@
         </div>
 
         <!-- Empty State -->
-        <div id="inboxEmptyState" class="hidden bg-white rounded-3xl p-10 text-center border border-[#FFE3E3] shadow-soft">
-          <div class="w-16 h-16 mx-auto rounded-3xl bg-[#FFF0F0] text-[#FF8B8B] flex items-center justify-center text-3xl mb-3">
+        <div id="inboxEmptyState" class="hidden bg-white rounded-3xl p-10 text-center border border-[#DBEAFE] shadow-soft">
+          <div class="w-16 h-16 mx-auto rounded-3xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center text-3xl mb-3">
             💌
           </div>
-          <h4 class="font-bold text-base text-[#4A4040] mb-1">아직 도착한 칭찬 편지가 없어요</h4>
-          <p class="text-xs sm:text-sm text-[#7A6E6E] mb-4">내가 먼저 친구에게 따뜻한 칭찬을 보내볼까요?</p>
-          <button onclick="app.switchStudentTab('send')" class="px-5 py-2.5 rounded-xl bg-[#FF8B8B] text-white text-xs sm:text-sm font-bold shadow hover:bg-[#f07474] transition">
+          <h4 class="font-bold text-base text-[#1E293B] mb-1">아직 도착한 칭찬 편지가 없어요</h4>
+          <p class="text-xs sm:text-sm text-[#64748B] mb-4">내가 먼저 친구에게 따뜻한 칭찬을 보내볼까요?</p>
+          <button onclick="app.switchStudentTab('send')" class="px-5 py-2.5 rounded-xl bg-[#2563EB] text-white text-xs sm:text-sm font-bold shadow hover:bg-[#1D4ED8] transition">
             친구 칭찬하러 가기
           </button>
         </div>
@@ -395,42 +395,42 @@
       <!-- TAB 3: CLASS RANKING & STATUS -->
       <div id="studentTabRank" class="hidden space-y-6">
         <!-- Class Praise Tree / Thermometer -->
-        <div class="bg-gradient-to-br from-[#FFF5F5] via-[#FFF9F9] to-[#FFF0E6] rounded-3xl p-6 sm:p-8 border border-[#FFE3E3] shadow-card">
+        <div class="bg-gradient-to-br from-[#EFF6FF] via-[#F4F8FD] to-[#E0F2FE] rounded-3xl p-6 sm:p-8 border border-[#DBEAFE] shadow-card">
           <div class="flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="space-y-2 text-center md:text-left">
-              <span class="px-3 py-1 rounded-full bg-[#FFE3E3] text-[#FF8B8B] text-xs font-extrabold inline-block">
+              <span class="px-3 py-1 rounded-full bg-[#DBEAFE] text-[#2563EB] text-xs font-extrabold inline-block">
                 🌳 우리반 칭찬 온도계
               </span>
-              <h3 class="text-2xl sm:text-3xl font-black text-[#4A4040]">
-                우리반이 모은 칭찬 <span id="classTotalPraiseCount" class="text-[#FF8B8B]">0</span>개!
+              <h3 class="text-2xl sm:text-3xl font-black text-[#1E293B]">
+                우리반이 모은 칭찬 <span id="classTotalPraiseCount" class="text-[#2563EB]">0</span>개!
               </h3>
-              <p class="text-xs sm:text-sm text-[#7A6E6E]" id="classGoalText">
+              <p class="text-xs sm:text-sm text-[#64748B]" id="classGoalText">
                 목표 100개까지 함께 힘을 모아요!
               </p>
             </div>
             
             <!-- Progress Bar -->
             <div class="w-full md:w-72 space-y-2">
-              <div class="flex justify-between text-xs font-bold text-[#7A6E6E]">
+              <div class="flex justify-between text-xs font-bold text-[#64748B]">
                 <span>칭찬 새싹 🌱</span>
                 <span id="classProgressPercent">0%</span>
                 <span>풍성한 칭찬 나무 🌳</span>
               </div>
-              <div class="w-full h-5 bg-white rounded-full p-1 border border-[#FFE3E3] overflow-hidden shadow-inner">
-                <div id="classProgressBar" class="h-full rounded-full bg-gradient-to-r from-[#FFD93D] via-[#FF8B8B] to-[#FF8B8B] transition-all duration-700" style="width: 0%;"></div>
+              <div class="w-full h-5 bg-white rounded-full p-1 border border-[#DBEAFE] overflow-hidden shadow-inner">
+                <div id="classProgressBar" class="h-full rounded-full bg-gradient-to-r from-[#38BDF8] via-[#3B82F6] to-[#2563EB] transition-all duration-700" style="width: 0%;"></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Classmates Hall of Fame Grid -->
-        <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3]">
+        <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#DBEAFE]">
           <div class="flex items-center justify-between mb-4">
-            <h4 class="font-bold text-base sm:text-lg text-[#4A4040] flex items-center gap-2">
-              <i class="fa-solid fa-award text-[#FFD93D]"></i>
+            <h4 class="font-bold text-base sm:text-lg text-[#1E293B] flex items-center gap-2">
+              <i class="fa-solid fa-award text-amber-500"></i>
               <span>우리반 칭찬 열매 현황</span>
             </h4>
-            <span class="text-xs text-[#7A6E6E]">모두가 함께 성장하는 칭찬 우체통</span>
+            <span class="text-xs text-[#64748B]">모두가 함께 성장하는 칭찬 우체통</span>
           </div>
 
           <div id="classmatesRankGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -443,25 +443,25 @@
     <!-- VIEW 3: TEACHER DASHBOARD (ADMIN) -->
     <section id="viewTeacher" class="hidden space-y-6">
       <!-- Admin Header Bar -->
-      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#DBEAFE] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-[#4A4040] text-white text-xs font-bold">선생님 모드</span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-[#4A4040]">학급 칭찬우체통 관리자 대시보드</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#1E293B] text-white text-xs font-bold">선생님 모드</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-[#1E293B]">학급 칭찬우체통 관리자 대시보드</h2>
           </div>
-          <p class="text-xs sm:text-sm text-[#7A6E6E] mt-1">학생들의 칭찬 활동을 안전하고 따뜻하게 지도 및 관리할 수 있습니다.</p>
+          <p class="text-xs sm:text-sm text-[#64748B] mt-1">학생들의 칭찬 활동을 안전하고 따뜻하게 지도 및 관리할 수 있습니다.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="app.openAddStudentModal()" class="touch-btn px-4 py-2 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1.5">
+          <button onclick="app.openAddStudentModal()" class="touch-btn px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1.5">
             <i class="fa-solid fa-user-plus"></i>
             <span>학생 추가</span>
           </button>
-          <button onclick="app.exportPraisesCSV()" class="touch-btn px-4 py-2 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#4A4040] border border-[#FFD1D1] text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+          <button onclick="app.exportPraisesCSV()" class="touch-btn px-4 py-2 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1E293B] border border-[#BFDBFE] text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
             <i class="fa-solid fa-file-excel text-emerald-600"></i>
             <span>기록 다운로드</span>
           </button>
-          <button onclick="app.openFirebaseModal()" class="touch-btn px-4 py-2 rounded-xl bg-white hover:bg-[#FFF9F9] text-[#7A6E6E] border border-[#FFE3E3] text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+          <button onclick="app.openFirebaseModal()" class="touch-btn px-4 py-2 rounded-xl bg-white hover:bg-[#F8FAFC] text-[#64748B] border border-[#DBEAFE] text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
             <i class="fa-solid fa-gear"></i>
             <span>설정</span>
           </button>
@@ -470,45 +470,45 @@
 
       <!-- Stats Metric Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
-          <span class="text-xs text-[#7A6E6E] font-medium block">오늘 보낸 칭찬</span>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DBEAFE] shadow-soft">
+          <span class="text-xs text-[#64748B] font-medium block">오늘 보낸 칭찬</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statTodayPraises" class="text-2xl sm:text-3xl font-extrabold text-[#FF8B8B]">0</span>
-            <span class="text-xs text-[#7A6E6E]">건</span>
+            <span id="statTodayPraises" class="text-2xl sm:text-3xl font-extrabold text-[#2563EB]">0</span>
+            <span class="text-xs text-[#64748B]">건</span>
           </div>
         </div>
 
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
-          <span class="text-xs text-[#7A6E6E] font-medium block">누적 전체 칭찬</span>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DBEAFE] shadow-soft">
+          <span class="text-xs text-[#64748B] font-medium block">누적 전체 칭찬</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statTotalPraises" class="text-2xl sm:text-3xl font-extrabold text-[#4A4040]">0</span>
-            <span class="text-xs text-[#7A6E6E]">건</span>
+            <span id="statTotalPraises" class="text-2xl sm:text-3xl font-extrabold text-[#1E293B]">0</span>
+            <span class="text-xs text-[#64748B]">건</span>
           </div>
         </div>
 
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
-          <span class="text-xs text-[#7A6E6E] font-medium block">칭찬 많이 받은 친구</span>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DBEAFE] shadow-soft">
+          <span class="text-xs text-[#64748B] font-medium block">칭찬 많이 받은 친구</span>
           <div class="flex items-baseline gap-1 mt-1 truncate">
-            <span id="statTopStudent" class="text-base sm:text-xl font-bold text-[#4A4040] truncate">-</span>
+            <span id="statTopStudent" class="text-base sm:text-xl font-bold text-[#1E293B] truncate">-</span>
           </div>
         </div>
 
-        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
-          <span class="text-xs text-[#7A6E6E] font-medium block">가장 인기 있는 태그</span>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#DBEAFE] shadow-soft">
+          <span class="text-xs text-[#64748B] font-medium block">가장 인기 있는 태그</span>
           <div class="flex items-baseline gap-1 mt-1 truncate">
-            <span id="statTopTag" class="text-base sm:text-xl font-bold text-[#FF8B8B] truncate">친절해요</span>
+            <span id="statTopTag" class="text-base sm:text-xl font-bold text-[#2563EB] truncate">친절해요</span>
           </div>
         </div>
       </div>
 
       <!-- Management Tabs: Student Scores vs Comprehensive Logs -->
-      <div class="bg-white rounded-3xl shadow-card border border-[#FFE3E3] overflow-hidden">
-        <div class="flex border-b border-[#FFE3E3] bg-[#FFF9F9]">
-          <button id="tabTeacherScore" onclick="app.switchTeacherSubtab('scores')" class="flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2">
+      <div class="bg-white rounded-3xl shadow-card border border-[#DBEAFE] overflow-hidden">
+        <div class="flex border-b border-[#DBEAFE] bg-[#F8FAFC]">
+          <button id="tabTeacherScore" onclick="app.switchTeacherSubtab('scores')" class="flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#2563EB] border-b-2 border-[#2563EB] bg-white transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-users"></i>
             <span>학생 칭찬 점수 및 정보 관리</span>
           </button>
-          <button id="tabTeacherLog" onclick="app.switchTeacherSubtab('logs')" class="flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2">
+          <button id="tabTeacherLog" onclick="app.switchTeacherSubtab('logs')" class="flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#64748B] hover:text-[#1E293B] transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-list-check"></i>
             <span>전체 칭찬 실시간 모니터링 로그</span>
           </button>
@@ -518,13 +518,13 @@
         <div id="teacherSubtabScores" class="p-5 sm:p-6 space-y-4">
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div class="relative flex-1 max-w-xs">
-              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#7A6E6E]"></i>
-              <input type="text" id="teacherStudentSearch" oninput="app.renderTeacherStudents()" placeholder="학생 이름 또는 번호 검색..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none focus:border-[#FF8B8B]" />
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#64748B]"></i>
+              <input type="text" id="teacherStudentSearch" oninput="app.renderTeacherStudents()" placeholder="학생 이름 또는 번호 검색..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] text-xs focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
             </div>
             
             <div class="flex items-center gap-2 text-xs">
-              <span class="text-[#7A6E6E]">1일 칭찬 제한:</span>
-              <select id="teacherDailyLimitSelect" onchange="app.updateDailyLimit(this.value)" class="bg-[#FFF0F0] border border-[#FFD1D1] rounded-xl px-2.5 py-1.5 font-bold text-[#FF8B8B] focus:outline-none">
+              <span class="text-[#64748B]">1일 칭찬 제한:</span>
+              <select id="teacherDailyLimitSelect" onchange="app.updateDailyLimit(this.value)" class="bg-[#EFF6FF] border border-[#BFDBFE] rounded-xl px-2.5 py-1.5 font-bold text-[#2563EB] focus:outline-none">
                 <option value="1">하루 1회</option>
                 <option value="2">하루 2회</option>
                 <option value="3" selected>하루 3회 (기본)</option>
@@ -535,9 +535,9 @@
           </div>
 
           <!-- Table Container -->
-          <div class="overflow-x-auto rounded-2xl border border-[#FFE3E3]">
+          <div class="overflow-x-auto rounded-2xl border border-[#DBEAFE]">
             <table class="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead class="bg-[#FFF0F0] text-[#4A4040] font-bold border-b border-[#FFE3E3]">
+              <thead class="bg-[#EFF6FF] text-[#1E293B] font-bold border-b border-[#DBEAFE]">
                 <tr>
                   <th class="py-3 px-4">번호</th>
                   <th class="py-3 px-4">학생 이름</th>
@@ -548,7 +548,7 @@
                   <th class="py-3 px-4 text-center">관리</th>
                 </tr>
               </thead>
-              <tbody id="teacherStudentTableBody" class="divide-y divide-[#FFE3E3] bg-white">
+              <tbody id="teacherStudentTableBody" class="divide-y divide-[#DBEAFE] bg-white">
                 <!-- Students rows rendered via JS -->
               </tbody>
             </table>
@@ -559,8 +559,8 @@
         <div id="teacherSubtabLogs" class="hidden p-5 sm:p-6 space-y-4">
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div class="flex items-center gap-2 flex-1">
-              <input type="text" id="teacherLogSearch" oninput="app.renderTeacherLogs()" placeholder="보낸/받은 학생 이름 또는 내용 검색..." class="w-full max-w-sm px-3.5 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none focus:border-[#FF8B8B]" />
-              <select id="teacherLogTagFilter" onchange="app.renderTeacherLogs()" class="px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none text-[#7A6E6E]">
+              <input type="text" id="teacherLogSearch" oninput="app.renderTeacherLogs()" placeholder="보낸/받은 학생 이름 또는 내용 검색..." class="w-full max-w-sm px-3.5 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] text-xs focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
+              <select id="teacherLogTagFilter" onchange="app.renderTeacherLogs()" class="px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] text-xs focus:outline-none text-[#64748B]">
                 <option value="">모든 태그</option>
                 <option value="친절해요">💖 친절해요</option>
                 <option value="성실해요">🌱 성실해요</option>
@@ -570,7 +570,7 @@
                 <option value="창의적이에요">🎨 창의적이에요</option>
               </select>
             </div>
-            <span id="teacherLogCountBadge" class="text-xs text-[#7A6E6E] font-medium">총 0건 기록</span>
+            <span id="teacherLogCountBadge" class="text-xs text-[#64748B] font-medium">총 0건 기록</span>
           </div>
 
           <div id="teacherLogsList" class="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
@@ -584,63 +584,63 @@
 
   <!-- MODAL 1: FIREBASE SETTINGS & INSTRUCTION -->
   <div id="firebaseModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#FFE3E3] max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between pb-3 border-b border-[#FFE3E3] mb-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#DBEAFE] max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-3 border-b border-[#DBEAFE] mb-4">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-[#FFF0F0] text-[#FF8B8B] flex items-center justify-center font-bold">
+          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold">
             <i class="fa-solid fa-fire-flame-curved"></i>
           </div>
-          <h3 class="font-bold text-base text-[#4A4040]">Firebase Firestore 연동 설정</h3>
+          <h3 class="font-bold text-base text-[#1E293B]">Firebase Firestore 연동 설정</h3>
         </div>
-        <button onclick="app.closeFirebaseModal()" class="text-[#7A6E6E] hover:text-[#4A4040] p-1">
+        <button onclick="app.closeFirebaseModal()" class="text-[#64748B] hover:text-[#1E293B] p-1">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
       <!-- Instruction Box -->
-      <div class="p-4 bg-[#FFF9F0] border border-[#FFE8A3] rounded-2xl text-xs space-y-1.5 text-[#4A4040] mb-4">
-        <p class="font-bold text-[#B8860B] flex items-center gap-1.5">
+      <div class="p-4 bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl text-xs space-y-1.5 text-[#1E293B] mb-4">
+        <p class="font-bold text-[#B45309] flex items-center gap-1.5">
           <i class="fa-solid fa-circle-info"></i>
           <span>Firebase 연동 안내</span>
         </p>
         <p>1. Firebase 콘솔(console.firebase.google.com)에서 프로젝트를 생성하고 Firestore Database를 시작하세요.</p>
         <p>2. 프로젝트 설정의 '웹 앱'에서 발급받은 `firebaseConfig` 값을 아래 칸에 입력하시면 즉시 클라우드 실시간 동기화가 활성화됩니다.</p>
-        <p class="text-[#7A6E6E]">※ 키를 입력하지 않아도 브라우저 <strong>로컬 동기화 모드</strong>로 모든 기능을 완벽하게 체험하실 수 있습니다.</p>
+        <p class="text-[#64748B]">※ 키를 입력하지 않아도 브라우저 <strong>로컬 동기화 모드</strong>로 모든 기능을 완벽하게 체험하실 수 있습니다.</p>
       </div>
 
       <!-- Config Form -->
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">apiKey</label>
-          <input type="text" id="cfgApiKey" placeholder="AIzaSy..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">apiKey</label>
+          <input type="text" id="cfgApiKey" placeholder="AIzaSy..." class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">authDomain</label>
-          <input type="text" id="cfgAuthDomain" placeholder="my-project.firebaseapp.com" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">authDomain</label>
+          <input type="text" id="cfgAuthDomain" placeholder="my-project.firebaseapp.com" class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">projectId</label>
-          <input type="text" id="cfgProjectId" placeholder="my-praise-mailbox" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">projectId</label>
+          <input type="text" id="cfgProjectId" placeholder="my-praise-mailbox" class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">storageBucket</label>
-          <input type="text" id="cfgStorageBucket" placeholder="my-project.appspot.com" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">storageBucket</label>
+          <input type="text" id="cfgStorageBucket" placeholder="my-project.appspot.com" class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">messagingSenderId</label>
-          <input type="text" id="cfgSenderId" placeholder="123456789..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">messagingSenderId</label>
+          <input type="text" id="cfgSenderId" placeholder="123456789..." class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">appId</label>
-          <input type="text" id="cfgAppId" placeholder="1:123456789:web:abcdef..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">appId</label>
+          <input type="text" id="cfgAppId" placeholder="1:123456789:web:abcdef..." class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
       </div>
 
       <div class="mt-5 flex gap-2">
-        <button onclick="app.saveFirebaseConfig()" class="flex-1 py-2.5 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs sm:text-sm font-bold shadow transition">
+        <button onclick="app.saveFirebaseConfig()" class="flex-1 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-bold shadow transition">
           설정 저장 및 연결하기
         </button>
-        <button onclick="app.resetFirebaseToLocal()" class="px-4 py-2.5 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#7A6E6E] text-xs font-semibold transition">
+        <button onclick="app.resetFirebaseToLocal()" class="px-4 py-2.5 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#64748B] text-xs font-semibold transition">
           로컬 모드로 전환
         </button>
       </div>
@@ -649,38 +649,38 @@
 
   <!-- MODAL 2: ADD STUDENT (TEACHER) -->
   <div id="addStudentModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#FFE3E3]">
-      <h3 class="font-bold text-base text-[#4A4040] mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-user-plus text-[#FF8B8B]"></i>
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#DBEAFE]">
+      <h3 class="font-bold text-base text-[#1E293B] mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-user-plus text-[#2563EB]"></i>
         <span>새 학생 등록</span>
       </h3>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">출석 번호</label>
-          <input type="number" id="newStudentNumber" placeholder="예: 16" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">출석 번호</label>
+          <input type="number" id="newStudentNumber" placeholder="예: 16" class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">학생 이름</label>
-          <input type="text" id="newStudentName" placeholder="예: 한지민" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+          <label class="block font-semibold text-[#1E293B] mb-1">학생 이름</label>
+          <input type="text" id="newStudentName" placeholder="예: 한지민" class="w-full px-3 py-2 rounded-xl border border-[#DBEAFE] bg-[#F8FAFC] focus:outline-none focus:border-[#2563EB] text-[#1E293B]" />
         </div>
         <div>
-          <label class="block font-semibold text-[#4A4040] mb-1">대표 동물 아바타</label>
+          <label class="block font-semibold text-[#1E293B] mb-1">대표 동물 아바타</label>
           <div class="flex gap-2 text-xl py-1" id="avatarSelectorBox">
-            <button type="button" onclick="app.selectNewAvatar('🐱')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐱</button>
-            <button type="button" onclick="app.selectNewAvatar('🐶')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐶</button>
-            <button type="button" onclick="app.selectNewAvatar('🐰')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐰</button>
-            <button type="button" onclick="app.selectNewAvatar('🐻')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐻</button>
-            <button type="button" onclick="app.selectNewAvatar('🦊')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🦊</button>
-            <button type="button" onclick="app.selectNewAvatar('🐼')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐼</button>
+            <button type="button" onclick="app.selectNewAvatar('🐱')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🐱</button>
+            <button type="button" onclick="app.selectNewAvatar('🐶')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🐶</button>
+            <button type="button" onclick="app.selectNewAvatar('🐰')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🐰</button>
+            <button type="button" onclick="app.selectNewAvatar('🐻')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🐻</button>
+            <button type="button" onclick="app.selectNewAvatar('🦊')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🦊</button>
+            <button type="button" onclick="app.selectNewAvatar('🐼')" class="avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]">🐼</button>
           </div>
         </div>
-        <p class="text-[11px] text-[#7A6E6E]">※ 초기 비밀번호는 <strong>0000</strong>으로 설정됩니다.</p>
+        <p class="text-[11px] text-[#64748B]">※ 초기 비밀번호는 <strong>0000</strong>으로 설정됩니다.</p>
       </div>
       <div class="mt-5 flex gap-2">
-        <button onclick="app.confirmAddStudent()" class="flex-1 py-2.5 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs font-bold transition">
+        <button onclick="app.confirmAddStudent()" class="flex-1 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition">
           등록 완료
         </button>
-        <button onclick="document.getElementById('addStudentModal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl bg-[#FFF0F0] text-[#7A6E6E] text-xs font-medium">
+        <button onclick="document.getElementById('addStudentModal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl bg-[#EFF6FF] text-[#64748B] text-xs font-medium">
           취소
         </button>
       </div>
@@ -688,7 +688,7 @@
   </div>
 
   <!-- TOAST NOTIFICATION -->
-  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#4A4040] text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transition-all opacity-0 pointer-events-none translate-y-4">
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#1E293B] text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transition-all opacity-0 pointer-events-none translate-y-4">
     <span id="toastIcon">✨</span>
     <span id="toastMessage">알림 내용</span>
   </div>
@@ -966,13 +966,13 @@
         const boxTch = document.getElementById('teacherLoginBox');
 
         if (mode === 'student') {
-          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#FF8B8B] shadow-sm';
-          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]';
+          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#2563EB] shadow-sm';
+          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B]';
           boxStd.classList.remove('hidden');
           boxTch.classList.add('hidden');
         } else {
-          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#4A4040] shadow-sm';
-          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]';
+          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#1E293B] shadow-sm';
+          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B]';
           boxTch.classList.remove('hidden');
           boxStd.classList.add('hidden');
         }
@@ -988,13 +988,13 @@
           card.type = 'button';
           card.className = `p-2.5 rounded-2xl border text-center transition-all touch-btn flex flex-col items-center justify-center ${
             isSelected 
-              ? 'bg-[#FFF0F0] border-[#FF8B8B] ring-2 ring-[#FF8B8B]/40 shadow-sm' 
-              : 'bg-white border-[#FFE3E3] hover:border-[#FFD1D1] hover:bg-[#FFF9F9]'
+              ? 'bg-[#EFF6FF] border-[#2563EB] ring-2 ring-[#2563EB]/40 shadow-sm' 
+              : 'bg-white border-[#DBEAFE] hover:border-[#BFDBFE] hover:bg-[#F8FAFC]'
           }`;
           card.innerHTML = `
             <span class="text-xl mb-1">${student.avatar || '🐰'}</span>
-            <span class="text-[11px] font-bold text-[#FF8B8B]">${student.number}번</span>
-            <span class="text-xs font-semibold text-[#4A4040] truncate max-w-full">${student.name}</span>
+            <span class="text-[11px] font-bold text-[#2563EB]">${student.number}번</span>
+            <span class="text-xs font-semibold text-[#1E293B] truncate max-w-full">${student.name}</span>
           `;
           card.onclick = () => this.selectLoginStudent(student);
           grid.appendChild(card);
@@ -1033,9 +1033,9 @@
         const dots = document.querySelectorAll('.pin-dot');
         dots.forEach((dot, idx) => {
           if (idx < this.pinBuffer.length) {
-            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-[#FF8B8B] scale-110 transition-all';
+            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-[#2563EB] scale-110 transition-all';
           } else {
-            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all';
+            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#2563EB] bg-white transition-all';
           }
         });
       }
@@ -1146,10 +1146,10 @@
           const btn = document.getElementById(`btnStudentTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
           const view = document.getElementById(`studentTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
           if (t === tab) {
-            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#FF8B8B] text-white shadow-sm flex items-center justify-center gap-1.5';
+            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#2563EB] text-white shadow-sm flex items-center justify-center gap-1.5';
             view.classList.remove('hidden');
           } else {
-            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5';
+            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#64748B] hover:text-[#1E293B] flex items-center justify-center gap-1.5';
             view.classList.add('hidden');
           }
         });
@@ -1170,18 +1170,18 @@
           card.type = 'button';
           card.className = `p-3 rounded-2xl border text-center transition-all touch-btn flex flex-col items-center justify-center ${
             isSelected 
-              ? 'bg-[#FFF0F0] border-[#FF8B8B] ring-2 ring-[#FF8B8B]/40 shadow-sm scale-105' 
-              : 'bg-white border-[#FFE3E3] hover:border-[#FFD1D1] hover:bg-[#FFF9F9]'
+              ? 'bg-[#EFF6FF] border-[#2563EB] ring-2 ring-[#2563EB]/40 shadow-sm scale-105' 
+              : 'bg-white border-[#DBEAFE] hover:border-[#BFDBFE] hover:bg-[#F8FAFC]'
           }`;
           card.innerHTML = `
             <span class="text-2xl mb-1">${friend.avatar || '🐰'}</span>
-            <span class="text-[11px] font-bold text-[#FF8B8B]">${friend.number}번</span>
-            <span class="text-xs font-bold text-[#4A4040]">${friend.name}</span>
+            <span class="text-[11px] font-bold text-[#2563EB]">${friend.number}번</span>
+            <span class="text-xs font-bold text-[#1E293B]">${friend.name}</span>
           `;
           card.onclick = () => {
             this.selectedTargetFriend = friend;
             document.getElementById('selectedFriendNotice').innerHTML = `
-              <span class="font-bold text-[#4A4040]">${friend.name}</span> 친구에게 보냅니다 💖
+              <span class="font-bold text-[#1E293B]">${friend.name}</span> 친구에게 보냅니다 💙
             `;
             this.renderFriendGrid();
           };
@@ -1198,8 +1198,8 @@
           btn.type = 'button';
           btn.className = `px-3.5 py-2 rounded-2xl border text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all touch-btn ${
             isSelected 
-              ? 'bg-[#FF8B8B] border-[#FF8B8B] text-white shadow-md scale-105' 
-              : 'bg-white border-[#FFE3E3] text-[#4A4040] hover:border-[#FFD1D1]'
+              ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-md scale-105' 
+              : 'bg-white border-[#DBEAFE] text-[#1E293B] hover:border-[#BFDBFE]'
           }`;
           btn.innerHTML = `<span>${tag.icon}</span><span>${tag.label}</span>`;
           btn.onclick = () => {
@@ -1289,7 +1289,7 @@
             particleCount: 70,
             spread: 60,
             origin: { y: 0.7 },
-            colors: ['#FF8B8B', '#FFD1D1', '#FFD93D', '#FFA07A']
+            colors: ['#2563EB', '#38BDF8', '#60A5FA', '#93C5FD', '#F59E0B']
           });
         }
 
@@ -1311,11 +1311,11 @@
         const btnRecent = document.getElementById('inboxFilterRecent');
 
         if (type === 'all') {
-          btnAll.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white';
-          btnRecent.className = 'px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]';
+          btnAll.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#2563EB] text-white';
+          btnRecent.className = 'px-2.5 py-1 rounded-xl text-[#64748B] hover:bg-[#EFF6FF]';
         } else {
-          btnRecent.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white';
-          btnAll.className = 'px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]';
+          btnRecent.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#2563EB] text-white';
+          btnAll.className = 'px-2.5 py-1 rounded-xl text-[#64748B] hover:bg-[#EFF6FF]';
         }
         this.renderStudentInbox();
       }
@@ -1349,27 +1349,27 @@
           const timeStr = this.formatRelativeTime(p.createdAt);
 
           const card = document.createElement('div');
-          card.className = 'bg-white rounded-3xl p-5 border border-[#FFE3E3] shadow-soft hover:shadow-card transition-all flex flex-col justify-between';
+          card.className = 'bg-white rounded-3xl p-5 border border-[#DBEAFE] shadow-soft hover:shadow-card transition-all flex flex-col justify-between';
           card.innerHTML = `
             <div>
               <div class="flex items-center justify-between gap-2 mb-3">
                 <div class="flex items-center gap-2">
                   <span class="text-2xl">${avatar}</span>
                   <div>
-                    <span class="text-xs font-bold text-[#4A4040]">${p.senderName} 친구가 보냄</span>
-                    <span class="block text-[10px] text-[#7A6E6E]">${timeStr}</span>
+                    <span class="text-xs font-bold text-[#1E293B]">${p.senderName} 친구가 보냄</span>
+                    <span class="block text-[10px] text-[#64748B]">${timeStr}</span>
                   </div>
                 </div>
                 <span class="px-2.5 py-1 rounded-full text-xs font-bold ${tagInfo.bg} ${tagInfo.border} ${tagInfo.text} border">
                   ${tagInfo.icon} ${tagInfo.label}
                 </span>
               </div>
-              <p class="text-xs sm:text-sm text-[#4A4040] leading-relaxed bg-[#FFF9F9] p-3.5 rounded-2xl border border-[#FFE3E3]/60 mb-3">
+              <p class="text-xs sm:text-sm text-[#1E293B] leading-relaxed bg-[#F8FAFC] p-3.5 rounded-2xl border border-[#DBEAFE]/60 mb-3">
                 "${p.message}"
               </p>
             </div>
             <div class="flex items-center justify-end">
-              <button onclick="app.reactHeart(this)" class="px-3 py-1.5 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#FF8B8B] text-xs font-bold transition flex items-center gap-1.5">
+              <button onclick="app.reactHeart(this)" class="px-3 py-1.5 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#2563EB] text-xs font-bold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-heart"></i>
                 <span>고마워요!</span>
               </button>
@@ -1380,9 +1380,9 @@
       }
 
       reactHeart(btn) {
-        btn.innerHTML = `<i class="fa-solid fa-heart text-red-500 animate-ping"></i><span>고마워요! ❤️</span>`;
-        btn.classList.add('bg-red-50', 'border', 'border-red-200');
-        this.showToast('친구에게 고마운 마음을 전했어요! 💖', '❤️');
+        btn.innerHTML = `<i class="fa-solid fa-heart text-blue-500 animate-ping"></i><span>고마워요! 💙</span>`;
+        btn.classList.add('bg-blue-50', 'border', 'border-blue-200');
+        this.showToast('친구에게 고마운 마음을 전했어요! 💙', '💌');
       }
 
       // --- Class Status & Rankings ---
@@ -1410,16 +1410,16 @@
           else badge = '칭찬 꿈나무';
 
           const card = document.createElement('div');
-          card.className = 'bg-[#FFF9F9] rounded-2xl p-3.5 border border-[#FFE3E3] text-center flex flex-col items-center justify-center hover:bg-white hover:shadow-soft transition';
+          card.className = 'bg-[#F8FAFC] rounded-2xl p-3.5 border border-[#DBEAFE] text-center flex flex-col items-center justify-center hover:bg-white hover:shadow-soft transition';
           card.innerHTML = `
             <span class="text-3xl mb-1">${student.avatar || '🐰'}</span>
-            <span class="text-[10px] font-bold text-[#FF8B8B]">${student.number}번</span>
-            <span class="text-xs font-bold text-[#4A4040]">${student.name}</span>
-            <div class="mt-2 px-2 py-0.5 rounded-full bg-white border border-[#FFE8A3] text-[#B8860B] text-[11px] font-extrabold flex items-center gap-1">
+            <span class="text-[10px] font-bold text-[#2563EB]">${student.number}번</span>
+            <span class="text-xs font-bold text-[#1E293B]">${student.name}</span>
+            <div class="mt-2 px-2 py-0.5 rounded-full bg-white border border-[#FDE68A] text-[#B45309] text-[11px] font-extrabold flex items-center gap-1">
               <span>⭐</span>
               <span>${student.score || 0}개</span>
             </div>
-            <span class="text-[10px] text-[#7A6E6E] mt-1">${badge}</span>
+            <span class="text-[10px] text-[#64748B] mt-1">${badge}</span>
           `;
           grid.appendChild(card);
         });
@@ -1471,13 +1471,13 @@
         const viewLog = document.getElementById('teacherSubtabLogs');
 
         if (tab === 'scores') {
-          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2';
-          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2';
+          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#2563EB] border-b-2 border-[#2563EB] bg-white transition flex items-center justify-center gap-2';
+          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#64748B] hover:text-[#1E293B] transition flex items-center justify-center gap-2';
           viewScore.classList.remove('hidden');
           viewLog.classList.add('hidden');
         } else {
-          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2';
-          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2';
+          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#2563EB] border-b-2 border-[#2563EB] bg-white transition flex items-center justify-center gap-2';
+          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#64748B] hover:text-[#1E293B] transition flex items-center justify-center gap-2';
           viewLog.classList.remove('hidden');
           viewScore.classList.add('hidden');
           this.renderTeacherLogs();
@@ -1498,27 +1498,27 @@
           const sent = this.praises.filter(p => p.senderId === student.id).length;
 
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-[#FFF9F9] transition-colors';
+          tr.className = 'hover:bg-[#F8FAFC] transition-colors';
           tr.innerHTML = `
-            <td class="py-3.5 px-4 font-bold text-[#FF8B8B]">${student.number}번</td>
+            <td class="py-3.5 px-4 font-bold text-[#2563EB]">${student.number}번</td>
             <td class="py-3.5 px-4">
               <div class="flex items-center gap-2">
                 <span class="text-xl">${student.avatar || '🐰'}</span>
-                <span class="font-bold text-[#4A4040]">${student.name}</span>
+                <span class="font-bold text-[#1E293B]">${student.name}</span>
               </div>
             </td>
-            <td class="py-3.5 px-4 text-center font-extrabold text-[#B8860B]">
-              <span class="px-2 py-0.5 rounded-full bg-[#FFF9F0] border border-[#FFE8A3]">
+            <td class="py-3.5 px-4 text-center font-extrabold text-[#B45309]">
+              <span class="px-2 py-0.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A]">
                 ⭐ ${student.score || 0}점
               </span>
             </td>
-            <td class="py-3.5 px-4 text-center text-[#7A6E6E]">${received}통</td>
-            <td class="py-3.5 px-4 text-center text-[#7A6E6E]">${sent}회</td>
+            <td class="py-3.5 px-4 text-center text-[#64748B]">${received}통</td>
+            <td class="py-3.5 px-4 text-center text-[#64748B]">${sent}회</td>
             <td class="py-3.5 px-4 text-center">
               <div class="inline-flex items-center gap-1">
-                <button onclick="app.adjustScore('${student.id}', -1)" class="w-7 h-7 rounded-lg bg-[#FFF0F0] text-[#FF8B8B] hover:bg-[#FFE3E3] font-bold">-1</button>
-                <button onclick="app.adjustScore('${student.id}', 1)" class="w-7 h-7 rounded-lg bg-[#FFF0F0] text-[#FF8B8B] hover:bg-[#FFE3E3] font-bold">+1</button>
-                <button onclick="app.promptEditScore('${student.id}')" class="px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#4A4040] text-xs font-semibold">직접 입력</button>
+                <button onclick="app.adjustScore('${student.id}', -1)" class="w-7 h-7 rounded-lg bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] font-bold">-1</button>
+                <button onclick="app.adjustScore('${student.id}', 1)" class="w-7 h-7 rounded-lg bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] font-bold">+1</button>
+                <button onclick="app.promptEditScore('${student.id}')" class="px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#1E293B] text-xs font-semibold">직접 입력</button>
               </div>
             </td>
             <td class="py-3.5 px-4 text-center">
@@ -1614,9 +1614,9 @@
       highlightAvatarChoice(emoji) {
         document.querySelectorAll('.avatar-opt').forEach(btn => {
           if (btn.textContent.trim() === emoji) {
-            btn.className = 'avatar-opt p-1.5 rounded-xl border-2 border-[#FF8B8B] bg-[#FFF0F0] scale-110';
+            btn.className = 'avatar-opt p-1.5 rounded-xl border-2 border-[#2563EB] bg-[#EFF6FF] scale-110';
           } else {
-            btn.className = 'avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]';
+            btn.className = 'avatar-opt p-1.5 rounded-xl border border-[#DBEAFE] hover:bg-[#EFF6FF]';
           }
         });
       }
@@ -1676,7 +1676,7 @@
 
         if (filtered.length === 0) {
           list.innerHTML = `
-            <div class="p-8 text-center text-xs text-[#7A6E6E] bg-[#FFF9F9] rounded-2xl border border-[#FFE3E3]">
+            <div class="p-8 text-center text-xs text-[#64748B] bg-[#F8FAFC] rounded-2xl border border-[#DBEAFE]">
               조건에 맞는 칭찬 기록이 없습니다.
             </div>
           `;
@@ -1693,19 +1693,19 @@
           });
 
           const item = document.createElement('div');
-          item.className = 'p-4 rounded-2xl border border-[#FFE3E3] bg-[#FFF9F9] hover:bg-white hover:shadow-soft transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3';
+          item.className = 'p-4 rounded-2xl border border-[#DBEAFE] bg-[#F8FAFC] hover:bg-white hover:shadow-soft transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3';
           item.innerHTML = `
             <div class="space-y-1.5 flex-1">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-bold text-[#FF8B8B] text-xs">${p.senderName}</span>
-                <i class="fa-solid fa-arrow-right text-[10px] text-[#7A6E6E]"></i>
-                <span class="font-bold text-[#4A4040] text-xs">${p.receiverName}</span>
+                <span class="font-bold text-[#2563EB] text-xs">${p.senderName}</span>
+                <i class="fa-solid fa-arrow-right text-[10px] text-[#64748B]"></i>
+                <span class="font-bold text-[#1E293B] text-xs">${p.receiverName}</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tagInfo.bg} ${tagInfo.text} border ${tagInfo.border}">
                   ${tagInfo.icon} ${tagInfo.label}
                 </span>
-                <span class="text-[10px] text-[#7A6E6E] ml-auto sm:ml-0">${timeStr}</span>
+                <span class="text-[10px] text-[#64748B] ml-auto sm:ml-0">${timeStr}</span>
               </div>
-              <p class="text-xs sm:text-sm text-[#4A4040] bg-white p-2.5 rounded-xl border border-[#FFE3E3]/60">
+              <p class="text-xs sm:text-sm text-[#1E293B] bg-white p-2.5 rounded-xl border border-[#DBEAFE]/60">
                 "${p.message}"
               </p>
             </div>
