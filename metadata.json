@@ -1,0 +1,6 @@
+{
+  "name": "우리반 칭찬우체통",
+  "description": "초등학생과 선생님을 위한 따뜻하고 인터랙티브한 실시간 학급 칭찬 우체통 웹 애플리케이션",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

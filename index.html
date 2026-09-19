@@ -1,0 +1,1873 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>우리반 칭찬우체통 - 초등 학급 칭찬 편지함</title>
+  <meta name="description" content="초등학생과 선생님을 위한 따뜻하고 인터랙티브한 실시간 학급 칭찬 우체통 웹 애플리케이션" />
+  <meta property="og:title" content="우리반 칭찬우체통" />
+  <meta property="og:description" content="초등학생과 선생님을 위한 따뜻하고 인터랙티브한 실시간 학급 칭찬 우체통" />
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              coral: '#FF8B8B',
+              coralHover: '#f07474',
+              peach: '#FFD1D1',
+              lightPeach: '#FFF0F0',
+              yellow: '#FFD93D',
+              cream: '#FFF9F9',
+              dark: '#4A4040',
+              muted: '#7A6E6E',
+              border: '#FFE3E3'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 8px 24px -4px rgba(255, 139, 139, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04)',
+            card: '0 10px 30px -5px rgba(255, 139, 139, 0.15)',
+            glow: '0 0 20px rgba(255, 139, 139, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: #FFF9F9;
+      color: #4A4040;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #FFD1D1;
+      border-radius: 9999px;
+    }
+    .touch-btn {
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+    @keyframes floatWarm {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatWarm 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FFF9F9] text-[#4A4040] selection:bg-[#FFD1D1]">
+
+  <!-- Top Banner / Navigation -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#FFE3E3] shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="app.goHome()">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#FF8B8B] to-[#FFD93D] flex items-center justify-center text-white shadow-md text-lg animate-float">
+          <i class="fa-solid fa-envelope-open-heart"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg sm:text-xl text-[#4A4040] tracking-tight flex items-center gap-2">
+            우리반 칭찬우체통
+            <span id="headerClassBadge" class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-[#FFF0F0] text-[#FF8B8B] font-medium border border-[#FFD1D1]">
+              행복한 우리반
+            </span>
+          </h1>
+          <p class="text-[11px] text-[#7A6E6E] hidden sm:block">서로에게 따뜻한 마음과 격려를 전해요</p>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Firebase Status Indicator -->
+        <button id="fbStatusBtn" onclick="app.openFirebaseModal()" class="px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors bg-[#FFF0F0] text-[#7A6E6E] hover:bg-[#FFE3E3] border border-[#FFE3E3]">
+          <span id="fbStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span id="fbStatusText" class="hidden md:inline">로컬 모드</span>
+          <i class="fa-solid fa-gear text-xs ml-0.5 text-[#FF8B8B]"></i>
+        </button>
+
+        <!-- Current User Info (When logged in) -->
+        <div id="userHeaderBadge" class="hidden items-center gap-2 pl-2 border-l border-[#FFE3E3]">
+          <div class="flex items-center gap-2 bg-[#FFF0F0] px-3 py-1 rounded-2xl border border-[#FFD1D1]">
+            <span id="userHeaderAvatar" class="text-lg">🌸</span>
+            <div class="text-left leading-tight">
+              <div id="userHeaderName" class="text-xs sm:text-sm font-bold text-[#4A4040]">학생 이름</div>
+              <div id="userHeaderScoreBadge" class="text-[11px] text-[#FF8B8B] font-medium">칭찬 열매 0개 ⭐</div>
+            </div>
+          </div>
+          <button onclick="app.logout()" title="로그아웃" class="touch-btn w-9 h-9 rounded-xl bg-white border border-[#FFE3E3] text-[#7A6E6E] hover:text-[#FF8B8B] hover:bg-[#FFF0F0] flex items-center justify-center transition">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 pb-24">
+    
+    <!-- Notice / Guide Bar -->
+    <div id="quickGuideBanner" class="mb-5 bg-gradient-to-r from-[#FFF0F0] to-[#FFF9F2] border border-[#FFD1D1] rounded-2xl p-3.5 px-4 flex items-center justify-between shadow-soft">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">💌</span>
+        <p class="text-xs sm:text-sm text-[#4A4040]">
+          <strong class="font-semibold text-[#FF8B8B]">오늘의 약속:</strong> 친구의 장점을 발견하고 하루 최대 3번 따뜻한 칭찬 편지를 보내보세요!
+        </p>
+      </div>
+      <button onclick="document.getElementById('quickGuideBanner').remove()" class="text-[#7A6E6E] hover:text-[#4A4040] text-xs p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- VIEW 1: LOGIN / USER SELECTOR -->
+    <section id="viewLogin" class="w-full max-w-xl mx-auto pt-4 transition-all">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-card border border-[#FFE3E3] text-center">
+        <!-- Cute Icon -->
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-[#FF8B8B] via-[#FFB4B4] to-[#FFD93D] flex items-center justify-center text-white text-3xl shadow-lg mb-4">
+          📮
+        </div>
+        <h2 class="text-2xl font-bold text-[#4A4040] mb-1">우리반 칭찬우체통</h2>
+        <p class="text-xs sm:text-sm text-[#7A6E6E] mb-6">칭찬을 나누고 싶은 내 번호나 역할을 선택해주세요</p>
+
+        <!-- Mode Toggle Tabs -->
+        <div class="grid grid-cols-2 p-1 bg-[#FFF0F0] rounded-2xl mb-6 border border-[#FFE3E3]">
+          <button id="tabStudentLogin" onclick="app.switchLoginMode('student')" class="py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#FF8B8B] shadow-sm">
+            <i class="fa-solid fa-graduation-cap mr-1.5"></i>학생 로그인
+          </button>
+          <button id="tabTeacherLogin" onclick="app.switchLoginMode('teacher')" class="py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]">
+            <i class="fa-solid fa-chalkboard-user mr-1.5"></i>선생님 (관리자)
+          </button>
+        </div>
+
+        <!-- Student Login Sub-view -->
+        <div id="studentLoginBox" class="space-y-4 text-left">
+          <label class="block text-xs sm:text-sm font-semibold text-[#4A4040]">
+            1. 내 이름 / 번호 선택하기
+          </label>
+          <div id="studentSelectionGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-56 overflow-y-auto p-1 custom-scrollbar">
+            <!-- Student cards generated via JS -->
+          </div>
+
+          <div id="studentPasswordSection" class="hidden mt-4 pt-4 border-t border-[#FFE3E3]">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-xs sm:text-sm font-semibold text-[#4A4040]">
+                2. 4자리 비밀번호 입력
+              </label>
+              <span class="text-[11px] text-[#7A6E6E]">(기본: 0000)</span>
+            </div>
+            
+            <!-- Pin Dots Display -->
+            <div class="flex justify-center items-center gap-3 py-2 my-1">
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
+              <span class="pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all"></span>
+            </div>
+
+            <!-- Virtual Numpad (friendly for tablets & touch screens) -->
+            <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto mt-3">
+              <button onclick="app.enterPin('1')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">1</button>
+              <button onclick="app.enterPin('2')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">2</button>
+              <button onclick="app.enterPin('3')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">3</button>
+              <button onclick="app.enterPin('4')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">4</button>
+              <button onclick="app.enterPin('5')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">5</button>
+              <button onclick="app.enterPin('6')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">6</button>
+              <button onclick="app.enterPin('7')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">7</button>
+              <button onclick="app.enterPin('8')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">8</button>
+              <button onclick="app.enterPin('9')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">9</button>
+              <button onclick="app.clearPin()" class="touch-btn h-12 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] active:scale-95 text-xs font-bold text-[#FF8B8B] border border-[#FFD1D1]">지우기</button>
+              <button onclick="app.enterPin('0')" class="touch-btn h-12 rounded-xl bg-[#FFF9F9] hover:bg-[#FFF0F0] active:scale-95 text-lg font-bold border border-[#FFE3E3]">0</button>
+              <button onclick="app.backspacePin()" class="touch-btn h-12 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] active:scale-95 text-sm text-[#FF8B8B] border border-[#FFD1D1]"><i class="fa-solid fa-delete-left"></i></button>
+            </div>
+
+            <button onclick="app.submitStudentLogin()" class="touch-btn w-full mt-4 py-3.5 rounded-2xl bg-[#FF8B8B] hover:bg-[#f07474] text-white font-bold shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2">
+              <span>우체통 열기</span>
+              <i class="fa-solid fa-key"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Teacher Login Sub-view -->
+        <div id="teacherLoginBox" class="hidden space-y-4 text-left">
+          <div class="p-4 bg-[#FFF0F0] rounded-2xl border border-[#FFD1D1] mb-2">
+            <div class="flex items-center gap-2 text-[#FF8B8B] font-bold text-sm mb-1">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>선생님 전용 관리 공간</span>
+            </div>
+            <p class="text-xs text-[#7A6E6E]">
+              학생들의 칭찬 점수 관리, 비밀번호 초기화, 전체 칭찬 로그를 모니터링할 수 있습니다. (초기 비밀번호: <strong>1234</strong>)
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-xs sm:text-sm font-semibold text-[#4A4040] mb-1.5">선생님 비밀번호</label>
+            <input type="password" id="teacherPwInput" placeholder="비밀번호 입력 (기본: 1234)" class="w-full px-4 py-3 rounded-2xl border border-[#FFE3E3] focus:outline-none focus:border-[#FF8B8B] focus:ring-2 focus:ring-[#FF8B8B]/20 bg-[#FFF9F9] text-sm" />
+          </div>
+
+          <button onclick="app.submitTeacherLogin()" class="touch-btn w-full py-3.5 rounded-2xl bg-[#4A4040] hover:bg-[#383030] text-white font-bold shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2">
+            <span>관리자 대시보드 입장</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: STUDENT DASHBOARD -->
+    <section id="viewStudent" class="hidden space-y-6">
+      <!-- Student Top Hero Card -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3] relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 text-8xl opacity-10 pointer-events-none select-none">
+          💌
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div id="studentAvatarLarge" class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-[#FFF0F0] to-[#FFE3E3] border-2 border-[#FFD1D1] flex items-center justify-center text-3xl sm:text-4xl shadow-inner">
+              🐰
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="studentNumberTag" class="px-2.5 py-0.5 rounded-full bg-[#FFF0F0] text-[#FF8B8B] text-xs font-bold border border-[#FFD1D1]">
+                  1번
+                </span>
+                <h2 id="studentNameDisplay" class="text-xl sm:text-2xl font-extrabold text-[#4A4040]">
+                  김민준
+                </h2>
+              </div>
+              <p class="text-xs sm:text-sm text-[#7A6E6E] mt-1">오늘도 친구들과 따뜻한 하루를 만들어요! ✨</p>
+            </div>
+          </div>
+
+          <!-- Score & Daily Limit Badges -->
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <!-- Praise Fruits -->
+            <div class="flex-1 sm:flex-initial bg-[#FFF9F0] border border-[#FFE8A3] px-4 py-2.5 rounded-2xl text-center shadow-sm">
+              <span class="block text-[11px] font-semibold text-[#B8860B]">내가 모은 칭찬 열매</span>
+              <div class="flex items-center justify-center gap-1.5 mt-0.5">
+                <span class="text-xl text-[#FFD93D]">⭐</span>
+                <span id="studentScoreCount" class="text-xl font-extrabold text-[#4A4040]">12개</span>
+              </div>
+            </div>
+
+            <!-- Daily Limit Left -->
+            <div class="flex-1 sm:flex-initial bg-[#FFF0F0] border border-[#FFD1D1] px-4 py-2.5 rounded-2xl text-center shadow-sm">
+              <span class="block text-[11px] font-semibold text-[#FF8B8B]">오늘 칭찬 가능 횟수</span>
+              <div class="flex items-center justify-center gap-1 mt-0.5">
+                <span id="studentDailyLimitBadge" class="text-xl font-extrabold text-[#FF8B8B]">3/3회</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs for Student Views -->
+      <div class="flex items-center justify-center gap-2 bg-white/70 backdrop-blur p-1.5 rounded-2xl border border-[#FFE3E3] shadow-soft max-w-md mx-auto">
+        <button id="btnStudentTabSend" onclick="app.switchStudentTab('send')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#FF8B8B] text-white shadow-sm flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>칭찬 보내기</span>
+        </button>
+        <button id="btnStudentTabInbox" onclick="app.switchStudentTab('inbox')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-inbox"></i>
+          <span>내 칭찬함</span>
+          <span id="inboxUnreadBadge" class="hidden w-2 h-2 rounded-full bg-[#FF8B8B]"></span>
+        </button>
+        <button id="btnStudentTabRank" onclick="app.switchStudentTab('rank')" class="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-tree"></i>
+          <span>우리반 현황</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: SEND PRAISE -->
+      <div id="studentTabSend" class="space-y-6">
+        <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-card border border-[#FFE3E3]">
+          
+          <!-- Step 1: Select Classmate -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">1</span>
+                칭찬할 친구를 선택해주세요
+              </label>
+              <span id="selectedFriendNotice" class="text-xs text-[#FF8B8B] font-semibold">친구를 탭하세요</span>
+            </div>
+            
+            <div id="friendGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1 custom-scrollbar">
+              <!-- Classmates dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Step 2: Choose Tag / Category -->
+          <div class="mb-6">
+            <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2 mb-3">
+              <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">2</span>
+              어떤 점을 칭찬하고 싶나요? (태그 선택)
+            </label>
+            <div id="praiseTagContainer" class="flex flex-wrap gap-2">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Step 3: Write Message & Quick Templates -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-sm sm:text-base font-bold text-[#4A4040] flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#FF8B8B] text-white text-xs flex items-center justify-center">3</span>
+                따뜻한 응원의 한마디를 적어주세요
+              </label>
+              <span id="charCountDisplay" class="text-xs text-[#7A6E6E]">0 / 150자</span>
+            </div>
+
+            <!-- Quick Template Chips -->
+            <div class="mb-2.5 flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar text-xs">
+              <span class="text-[11px] text-[#7A6E6E] whitespace-nowrap font-medium">추천 문장:</span>
+              <button type="button" onclick="app.applyTemplate('오늘 청소 도와줘서 정말 고마웠어! 🧹')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">청소 도와줘서 고마워</button>
+              <button type="button" onclick="app.applyTemplate('수업 시간에 모르는 걸 친절하게 알려줬어! 💡')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">친절하게 알려줬어</button>
+              <button type="button" onclick="app.applyTemplate('체육 시간에 끝까지 포기하지 않고 멋지게 달렸어! 🏃')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">체육 시간에 멋졌어</button>
+              <button type="button" onclick="app.applyTemplate('항상 밝은 미소로 인사해줘서 기분이 좋아져! 😊')" class="px-2.5 py-1 rounded-xl bg-[#FFF0F0] text-[#4A4040] hover:bg-[#FFE3E3] border border-[#FFD1D1] whitespace-nowrap transition">밝은 미소 고마워</button>
+            </div>
+
+            <textarea id="praiseMessageInput" maxlength="150" rows="3" placeholder="친구의 따뜻한 행동, 배려, 멋진 순간을 적어보세요. (예: 오늘 발표할 때 용기 내서 멋지게 말해줘서 감동받았어!)" class="w-full p-4 rounded-2xl border border-[#FFE3E3] focus:outline-none focus:border-[#FF8B8B] focus:ring-2 focus:ring-[#FF8B8B]/20 bg-[#FFF9F9] text-sm text-[#4A4040] leading-relaxed resize-none"></textarea>
+          </div>
+
+          <!-- Send Action Button -->
+          <div class="pt-2">
+            <button id="btnSendPraiseSubmit" onclick="app.submitPraise()" class="touch-btn w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF8B8B] to-[#ff9e9e] hover:from-[#f07474] hover:to-[#FF8B8B] text-white font-extrabold text-base sm:text-lg shadow-card hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2">
+              <i class="fa-solid fa-heart text-amber-200 animate-pulse"></i>
+              <span>따뜻한 칭찬 편지 부치기</span>
+              <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MY INBOX -->
+      <div id="studentTabInbox" class="hidden space-y-4">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <h3 class="font-bold text-lg text-[#4A4040]">도착한 칭찬 편지</h3>
+            <span id="inboxTotalCountBadge" class="px-2.5 py-0.5 rounded-full bg-[#FFD1D1] text-[#4A4040] text-xs font-bold">0통</span>
+          </div>
+          <!-- Filter / Sort -->
+          <div class="flex items-center gap-1 text-xs">
+            <button onclick="app.filterInbox('all')" id="inboxFilterAll" class="px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white">전체</button>
+            <button onclick="app.filterInbox('recent')" id="inboxFilterRecent" class="px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]">최신순</button>
+          </div>
+        </div>
+
+        <div id="inboxLettersList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamically populated praise cards -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="inboxEmptyState" class="hidden bg-white rounded-3xl p-10 text-center border border-[#FFE3E3] shadow-soft">
+          <div class="w-16 h-16 mx-auto rounded-3xl bg-[#FFF0F0] text-[#FF8B8B] flex items-center justify-center text-3xl mb-3">
+            💌
+          </div>
+          <h4 class="font-bold text-base text-[#4A4040] mb-1">아직 도착한 칭찬 편지가 없어요</h4>
+          <p class="text-xs sm:text-sm text-[#7A6E6E] mb-4">내가 먼저 친구에게 따뜻한 칭찬을 보내볼까요?</p>
+          <button onclick="app.switchStudentTab('send')" class="px-5 py-2.5 rounded-xl bg-[#FF8B8B] text-white text-xs sm:text-sm font-bold shadow hover:bg-[#f07474] transition">
+            친구 칭찬하러 가기
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 3: CLASS RANKING & STATUS -->
+      <div id="studentTabRank" class="hidden space-y-6">
+        <!-- Class Praise Tree / Thermometer -->
+        <div class="bg-gradient-to-br from-[#FFF5F5] via-[#FFF9F9] to-[#FFF0E6] rounded-3xl p-6 sm:p-8 border border-[#FFE3E3] shadow-card">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+              <span class="px-3 py-1 rounded-full bg-[#FFE3E3] text-[#FF8B8B] text-xs font-extrabold inline-block">
+                🌳 우리반 칭찬 온도계
+              </span>
+              <h3 class="text-2xl sm:text-3xl font-black text-[#4A4040]">
+                우리반이 모은 칭찬 <span id="classTotalPraiseCount" class="text-[#FF8B8B]">0</span>개!
+              </h3>
+              <p class="text-xs sm:text-sm text-[#7A6E6E]" id="classGoalText">
+                목표 100개까지 함께 힘을 모아요!
+              </p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full md:w-72 space-y-2">
+              <div class="flex justify-between text-xs font-bold text-[#7A6E6E]">
+                <span>칭찬 새싹 🌱</span>
+                <span id="classProgressPercent">0%</span>
+                <span>풍성한 칭찬 나무 🌳</span>
+              </div>
+              <div class="w-full h-5 bg-white rounded-full p-1 border border-[#FFE3E3] overflow-hidden shadow-inner">
+                <div id="classProgressBar" class="h-full rounded-full bg-gradient-to-r from-[#FFD93D] via-[#FF8B8B] to-[#FF8B8B] transition-all duration-700" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Classmates Hall of Fame Grid -->
+        <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3]">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="font-bold text-base sm:text-lg text-[#4A4040] flex items-center gap-2">
+              <i class="fa-solid fa-award text-[#FFD93D]"></i>
+              <span>우리반 칭찬 열매 현황</span>
+            </h4>
+            <span class="text-xs text-[#7A6E6E]">모두가 함께 성장하는 칭찬 우체통</span>
+          </div>
+
+          <div id="classmatesRankGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: TEACHER DASHBOARD (ADMIN) -->
+    <section id="viewTeacher" class="hidden space-y-6">
+      <!-- Admin Header Bar -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-card border border-[#FFE3E3] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-[#4A4040] text-white text-xs font-bold">선생님 모드</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-[#4A4040]">학급 칭찬우체통 관리자 대시보드</h2>
+          </div>
+          <p class="text-xs sm:text-sm text-[#7A6E6E] mt-1">학생들의 칭찬 활동을 안전하고 따뜻하게 지도 및 관리할 수 있습니다.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="app.openAddStudentModal()" class="touch-btn px-4 py-2 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>학생 추가</span>
+          </button>
+          <button onclick="app.exportPraisesCSV()" class="touch-btn px-4 py-2 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#4A4040] border border-[#FFD1D1] text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-excel text-emerald-600"></i>
+            <span>기록 다운로드</span>
+          </button>
+          <button onclick="app.openFirebaseModal()" class="touch-btn px-4 py-2 rounded-xl bg-white hover:bg-[#FFF9F9] text-[#7A6E6E] border border-[#FFE3E3] text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-gear"></i>
+            <span>설정</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Metric Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
+          <span class="text-xs text-[#7A6E6E] font-medium block">오늘 보낸 칭찬</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statTodayPraises" class="text-2xl sm:text-3xl font-extrabold text-[#FF8B8B]">0</span>
+            <span class="text-xs text-[#7A6E6E]">건</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
+          <span class="text-xs text-[#7A6E6E] font-medium block">누적 전체 칭찬</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statTotalPraises" class="text-2xl sm:text-3xl font-extrabold text-[#4A4040]">0</span>
+            <span class="text-xs text-[#7A6E6E]">건</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
+          <span class="text-xs text-[#7A6E6E] font-medium block">칭찬 많이 받은 친구</span>
+          <div class="flex items-baseline gap-1 mt-1 truncate">
+            <span id="statTopStudent" class="text-base sm:text-xl font-bold text-[#4A4040] truncate">-</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#FFE3E3] shadow-soft">
+          <span class="text-xs text-[#7A6E6E] font-medium block">가장 인기 있는 태그</span>
+          <div class="flex items-baseline gap-1 mt-1 truncate">
+            <span id="statTopTag" class="text-base sm:text-xl font-bold text-[#FF8B8B] truncate">친절해요</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Management Tabs: Student Scores vs Comprehensive Logs -->
+      <div class="bg-white rounded-3xl shadow-card border border-[#FFE3E3] overflow-hidden">
+        <div class="flex border-b border-[#FFE3E3] bg-[#FFF9F9]">
+          <button id="tabTeacherScore" onclick="app.switchTeacherSubtab('scores')" class="flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-users"></i>
+            <span>학생 칭찬 점수 및 정보 관리</span>
+          </button>
+          <button id="tabTeacherLog" onclick="app.switchTeacherSubtab('logs')" class="flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-list-check"></i>
+            <span>전체 칭찬 실시간 모니터링 로그</span>
+          </button>
+        </div>
+
+        <!-- SUBTAB 1: STUDENT SCORE MANAGEMENT TABLE -->
+        <div id="teacherSubtabScores" class="p-5 sm:p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="relative flex-1 max-w-xs">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#7A6E6E]"></i>
+              <input type="text" id="teacherStudentSearch" oninput="app.renderTeacherStudents()" placeholder="학생 이름 또는 번호 검색..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none focus:border-[#FF8B8B]" />
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-[#7A6E6E]">1일 칭찬 제한:</span>
+              <select id="teacherDailyLimitSelect" onchange="app.updateDailyLimit(this.value)" class="bg-[#FFF0F0] border border-[#FFD1D1] rounded-xl px-2.5 py-1.5 font-bold text-[#FF8B8B] focus:outline-none">
+                <option value="1">하루 1회</option>
+                <option value="2">하루 2회</option>
+                <option value="3" selected>하루 3회 (기본)</option>
+                <option value="5">하루 5회</option>
+                <option value="10">하루 10회</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto rounded-2xl border border-[#FFE3E3]">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead class="bg-[#FFF0F0] text-[#4A4040] font-bold border-b border-[#FFE3E3]">
+                <tr>
+                  <th class="py-3 px-4">번호</th>
+                  <th class="py-3 px-4">학생 이름</th>
+                  <th class="py-3 px-4 text-center">칭찬 점수</th>
+                  <th class="py-3 px-4 text-center">받은 칭찬</th>
+                  <th class="py-3 px-4 text-center">보낸 칭찬</th>
+                  <th class="py-3 px-4 text-center">점수 부여/차감</th>
+                  <th class="py-3 px-4 text-center">관리</th>
+                </tr>
+              </thead>
+              <tbody id="teacherStudentTableBody" class="divide-y divide-[#FFE3E3] bg-white">
+                <!-- Students rows rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUBTAB 2: COMPREHENSIVE PRAISE LOG -->
+        <div id="teacherSubtabLogs" class="hidden p-5 sm:p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2 flex-1">
+              <input type="text" id="teacherLogSearch" oninput="app.renderTeacherLogs()" placeholder="보낸/받은 학생 이름 또는 내용 검색..." class="w-full max-w-sm px-3.5 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none focus:border-[#FF8B8B]" />
+              <select id="teacherLogTagFilter" onchange="app.renderTeacherLogs()" class="px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] text-xs focus:outline-none text-[#7A6E6E]">
+                <option value="">모든 태그</option>
+                <option value="친절해요">💖 친절해요</option>
+                <option value="성실해요">🌱 성실해요</option>
+                <option value="함께해요">🤝 함께해요</option>
+                <option value="배려해요">💡 배려해요</option>
+                <option value="멋져요">🌟 멋져요</option>
+                <option value="창의적이에요">🎨 창의적이에요</option>
+              </select>
+            </div>
+            <span id="teacherLogCountBadge" class="text-xs text-[#7A6E6E] font-medium">총 0건 기록</span>
+          </div>
+
+          <div id="teacherLogsList" class="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Full log feed rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: FIREBASE SETTINGS & INSTRUCTION -->
+  <div id="firebaseModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#FFE3E3] max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-3 border-b border-[#FFE3E3] mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-[#FFF0F0] text-[#FF8B8B] flex items-center justify-center font-bold">
+            <i class="fa-solid fa-fire-flame-curved"></i>
+          </div>
+          <h3 class="font-bold text-base text-[#4A4040]">Firebase Firestore 연동 설정</h3>
+        </div>
+        <button onclick="app.closeFirebaseModal()" class="text-[#7A6E6E] hover:text-[#4A4040] p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Instruction Box -->
+      <div class="p-4 bg-[#FFF9F0] border border-[#FFE8A3] rounded-2xl text-xs space-y-1.5 text-[#4A4040] mb-4">
+        <p class="font-bold text-[#B8860B] flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Firebase 연동 안내</span>
+        </p>
+        <p>1. Firebase 콘솔(console.firebase.google.com)에서 프로젝트를 생성하고 Firestore Database를 시작하세요.</p>
+        <p>2. 프로젝트 설정의 '웹 앱'에서 발급받은 `firebaseConfig` 값을 아래 칸에 입력하시면 즉시 클라우드 실시간 동기화가 활성화됩니다.</p>
+        <p class="text-[#7A6E6E]">※ 키를 입력하지 않아도 브라우저 <strong>로컬 동기화 모드</strong>로 모든 기능을 완벽하게 체험하실 수 있습니다.</p>
+      </div>
+
+      <!-- Config Form -->
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">apiKey</label>
+          <input type="text" id="cfgApiKey" placeholder="AIzaSy..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">authDomain</label>
+          <input type="text" id="cfgAuthDomain" placeholder="my-project.firebaseapp.com" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">projectId</label>
+          <input type="text" id="cfgProjectId" placeholder="my-praise-mailbox" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">storageBucket</label>
+          <input type="text" id="cfgStorageBucket" placeholder="my-project.appspot.com" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">messagingSenderId</label>
+          <input type="text" id="cfgSenderId" placeholder="123456789..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">appId</label>
+          <input type="text" id="cfgAppId" placeholder="1:123456789:web:abcdef..." class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+      </div>
+
+      <div class="mt-5 flex gap-2">
+        <button onclick="app.saveFirebaseConfig()" class="flex-1 py-2.5 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs sm:text-sm font-bold shadow transition">
+          설정 저장 및 연결하기
+        </button>
+        <button onclick="app.resetFirebaseToLocal()" class="px-4 py-2.5 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#7A6E6E] text-xs font-semibold transition">
+          로컬 모드로 전환
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD STUDENT (TEACHER) -->
+  <div id="addStudentModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#FFE3E3]">
+      <h3 class="font-bold text-base text-[#4A4040] mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-user-plus text-[#FF8B8B]"></i>
+        <span>새 학생 등록</span>
+      </h3>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">출석 번호</label>
+          <input type="number" id="newStudentNumber" placeholder="예: 16" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">학생 이름</label>
+          <input type="text" id="newStudentName" placeholder="예: 한지민" class="w-full px-3 py-2 rounded-xl border border-[#FFE3E3] bg-[#FFF9F9] focus:outline-none focus:border-[#FF8B8B]" />
+        </div>
+        <div>
+          <label class="block font-semibold text-[#4A4040] mb-1">대표 동물 아바타</label>
+          <div class="flex gap-2 text-xl py-1" id="avatarSelectorBox">
+            <button type="button" onclick="app.selectNewAvatar('🐱')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐱</button>
+            <button type="button" onclick="app.selectNewAvatar('🐶')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐶</button>
+            <button type="button" onclick="app.selectNewAvatar('🐰')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐰</button>
+            <button type="button" onclick="app.selectNewAvatar('🐻')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐻</button>
+            <button type="button" onclick="app.selectNewAvatar('🦊')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🦊</button>
+            <button type="button" onclick="app.selectNewAvatar('🐼')" class="avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]">🐼</button>
+          </div>
+        </div>
+        <p class="text-[11px] text-[#7A6E6E]">※ 초기 비밀번호는 <strong>0000</strong>으로 설정됩니다.</p>
+      </div>
+      <div class="mt-5 flex gap-2">
+        <button onclick="app.confirmAddStudent()" class="flex-1 py-2.5 rounded-xl bg-[#FF8B8B] hover:bg-[#f07474] text-white text-xs font-bold transition">
+          등록 완료
+        </button>
+        <button onclick="document.getElementById('addStudentModal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl bg-[#FFF0F0] text-[#7A6E6E] text-xs font-medium">
+          취소
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#4A4040] text-white px-5 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transition-all opacity-0 pointer-events-none translate-y-4">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">알림 내용</span>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    /**
+     * 우리반 칭찬우체통 (Class Praise Mailbox)
+     * Full-Featured Elementary Classroom Web Application
+     */
+
+    // Default sample class students
+    const DEFAULT_STUDENTS = [
+      { id: 'std-1', number: 1, name: '김민준', avatar: '🐰', password: '0000', role: 'student', score: 14 },
+      { id: 'std-2', number: 2, name: '이서연', avatar: '🐱', password: '0000', role: 'student', score: 19 },
+      { id: 'std-3', number: 3, name: '박도윤', avatar: '🐶', password: '0000', role: 'student', score: 12 },
+      { id: 'std-4', number: 4, name: '정하은', avatar: '🐻', password: '0000', role: 'student', score: 16 },
+      { id: 'std-5', number: 5, name: '최시우', avatar: '🦊', password: '0000', role: 'student', score: 11 },
+      { id: 'std-6', number: 6, name: '윤지아', avatar: '🐼', password: '0000', role: 'student', score: 15 },
+      { id: 'std-7', number: 7, name: '강건우', avatar: '🐯', password: '0000', role: 'student', score: 9 },
+      { id: 'std-8', number: 8, name: '송채원', avatar: '🐨', password: '0000', role: 'student', score: 18 },
+      { id: 'std-9', number: 9, name: '임하준', avatar: '🦁', password: '0000', role: 'student', score: 13 },
+      { id: 'std-10', number: 10, name: '오수아', avatar: '🐥', password: '0000', role: 'student', score: 17 },
+      { id: 'std-11', number: 11, name: '조유찬', avatar: '🐧', password: '0000', role: 'student', score: 10 },
+      { id: 'std-12', number: 12, name: '배서현', avatar: '🦄', password: '0000', role: 'student', score: 15 }
+    ];
+
+    // Praise categories with warm colors & emojis
+    const PRAISE_TAGS = [
+      { id: '친절해요', label: '친절해요', icon: '💖', bg: 'bg-[#FFE8E8]', border: 'border-[#FFA8A8]', text: 'text-[#E04D4D]' },
+      { id: '성실해요', label: '성실해요', icon: '🌱', bg: 'bg-[#EBF7ED]', border: 'border-[#B2E2B8]', text: 'text-[#2E7D32]' },
+      { id: '함께해요', label: '함께해요', icon: '🤝', bg: 'bg-[#EBF5FB]', border: 'border-[#A9D4F2]', text: 'text-[#1976D2]' },
+      { id: '배려해요', label: '배려해요', icon: '💡', bg: 'bg-[#FFF9E6]', border: 'border-[#FFE494]', text: 'text-[#B78103]' },
+      { id: '멋져요', label: '멋져요', icon: '🌟', bg: 'bg-[#F5EEF8]', border: 'border-[#D7BDE2]', text: 'text-[#8E44AD]' },
+      { id: '창의적이에요', label: '창의적이에요', icon: '🎨', bg: 'bg-[#FFF0F5]', border: 'border-[#FFC0CB]', text: 'text-[#D81B60]' }
+    ];
+
+    // Initial praises for warm classroom atmosphere
+    const DEFAULT_PRAISES = [
+      {
+        id: 'prs-1',
+        senderId: 'std-2',
+        senderName: '이서연',
+        receiverId: 'std-1',
+        receiverName: '김민준',
+        tag: '친절해요',
+        message: '오늘 급식실에서 줄 설 때 양보해줘서 고마웠어! 항상 친구들을 배려해줘서 고마워.',
+        createdAt: Date.now() - 1000 * 60 * 45
+      },
+      {
+        id: 'prs-2',
+        senderId: 'std-4',
+        senderName: '정하은',
+        receiverId: 'std-1',
+        receiverName: '김민준',
+        tag: '성실해요',
+        message: '오늘 과학 실험 시간에 뒷정리까지 끝까지 꼼꼼하게 도와줘서 든든했어!',
+        createdAt: Date.now() - 1000 * 60 * 120
+      },
+      {
+        id: 'prs-3',
+        senderId: 'std-3',
+        senderName: '박도윤',
+        receiverId: 'std-2',
+        receiverName: '이서연',
+        tag: '함께해요',
+        message: '미술 시간에 준비물 나눠 써줘서 멋진 작품을 완성할 수 있었어!',
+        createdAt: Date.now() - 1000 * 60 * 200
+      },
+      {
+        id: 'prs-4',
+        senderId: 'std-1',
+        senderName: '김민준',
+        receiverId: 'std-8',
+        receiverName: '송채원',
+        tag: '멋져요',
+        message: '체육 시간에 발야구할 때 멋진 수비 보여줘서 정말 감동이었어!',
+        createdAt: Date.now() - 1000 * 60 * 300
+      }
+    ];
+
+    class PraiseApp {
+      constructor() {
+        this.db = null;
+        this.isFirebaseReady = false;
+        this.unsubscribeUsers = null;
+        this.unsubscribePraises = null;
+        this.unsubscribeSettings = null;
+
+        // Application State
+        this.users = [];
+        this.praises = [];
+        this.settings = {
+          dailyLimit: 3,
+          teacherPassword: '1234',
+          classGoal: 100
+        };
+
+        this.currentUser = null;
+        this.selectedLoginStudent = null;
+        this.pinBuffer = '';
+
+        // Praise Compose State
+        this.selectedTargetFriend = null;
+        this.selectedTag = PRAISE_TAGS[0].id;
+        this.newAvatarChoice = '🐱';
+        this.inboxFilter = 'all';
+
+        this.init();
+      }
+
+      init() {
+        this.loadLocalData();
+        this.initFirebase();
+        this.renderPraiseTags();
+        this.renderLoginStudentGrid();
+        this.updateCharCount();
+        this.bindEvents();
+      }
+
+      loadLocalData() {
+        const storedUsers = localStorage.getItem('praise_mailbox_users');
+        this.users = storedUsers ? JSON.parse(storedUsers) : [...DEFAULT_STUDENTS];
+
+        const storedPraises = localStorage.getItem('praise_mailbox_praises');
+        this.praises = storedPraises ? JSON.parse(storedPraises) : [...DEFAULT_PRAISES];
+
+        const storedSettings = localStorage.getItem('praise_mailbox_settings');
+        if (storedSettings) {
+          this.settings = Object.assign(this.settings, JSON.parse(storedSettings));
+        }
+
+        const storedCfg = localStorage.getItem('praise_mailbox_fb_cfg');
+        if (storedCfg) {
+          try {
+            const cfg = JSON.parse(storedCfg);
+            document.getElementById('cfgApiKey').value = cfg.apiKey || '';
+            document.getElementById('cfgAuthDomain').value = cfg.authDomain || '';
+            document.getElementById('cfgProjectId').value = cfg.projectId || '';
+            document.getElementById('cfgStorageBucket').value = cfg.storageBucket || '';
+            document.getElementById('cfgSenderId').value = cfg.messagingSenderId || '';
+            document.getElementById('cfgAppId').value = cfg.appId || '';
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+      }
+
+      saveLocalData() {
+        localStorage.setItem('praise_mailbox_users', JSON.stringify(this.users));
+        localStorage.setItem('praise_mailbox_praises', JSON.stringify(this.praises));
+        localStorage.setItem('praise_mailbox_settings', JSON.stringify(this.settings));
+      }
+
+      // --- Firebase Firestore Initialization ---
+      initFirebase() {
+        const storedCfg = localStorage.getItem('praise_mailbox_fb_cfg');
+        if (!storedCfg) {
+          this.setFirebaseStatus(false, '로컬 모드');
+          return;
+        }
+
+        try {
+          const config = JSON.parse(storedCfg);
+          if (!config.apiKey || !config.projectId) {
+            this.setFirebaseStatus(false, '로컬 모드');
+            return;
+          }
+
+          if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+          }
+          this.db = firebase.firestore();
+          this.isFirebaseReady = true;
+          this.setFirebaseStatus(true, 'Firestore 연결됨');
+          this.setupFirestoreListeners();
+        } catch (err) {
+          console.error('Firebase init failed:', err);
+          this.isFirebaseReady = false;
+          this.setFirebaseStatus(false, '연결 오류 (로컬 실행)');
+        }
+      }
+
+      setFirebaseStatus(connected, text) {
+        const dot = document.getElementById('fbStatusDot');
+        const label = document.getElementById('fbStatusText');
+        if (connected) {
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+          label.textContent = text;
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          label.textContent = text;
+        }
+      }
+
+      setupFirestoreListeners() {
+        if (!this.db) return;
+
+        // Realtime Users Listener
+        this.unsubscribeUsers = this.db.collection('users').onSnapshot((snap) => {
+          if (!snap.empty) {
+            const list = [];
+            snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            this.users = list.sort((a, b) => a.number - b.number);
+            this.saveLocalData();
+            this.onDataUpdated();
+          } else {
+            // Seed initial users if collection is empty
+            this.users.forEach(u => this.db.collection('users').doc(u.id).set(u));
+          }
+        }, err => console.warn('Users listener:', err));
+
+        // Realtime Praises Listener
+        this.unsubscribePraises = this.db.collection('praises').orderBy('createdAt', 'desc').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+          this.praises = list;
+          this.saveLocalData();
+          this.onDataUpdated();
+        }, err => console.warn('Praises listener:', err));
+
+        // Settings Listener
+        this.unsubscribeSettings = this.db.collection('settings').doc('config').onSnapshot((doc) => {
+          if (doc.exists) {
+            this.settings = Object.assign(this.settings, doc.data());
+            this.saveLocalData();
+            this.onDataUpdated();
+          } else {
+            this.db.collection('settings').doc('config').set(this.settings);
+          }
+        }, err => console.warn('Settings listener:', err));
+      }
+
+      onDataUpdated() {
+        if (this.currentUser) {
+          if (this.currentUser.role === 'student') {
+            const updated = this.users.find(u => u.id === this.currentUser.id);
+            if (updated) this.currentUser = updated;
+            this.renderStudentHeader();
+            this.renderStudentInbox();
+            this.renderClassRankings();
+          } else if (this.currentUser.role === 'teacher') {
+            this.renderTeacherDashboard();
+          }
+        } else {
+          this.renderLoginStudentGrid();
+        }
+      }
+
+      // --- Navigation & Views ---
+      goHome() {
+        if (this.currentUser) {
+          if (this.currentUser.role === 'teacher') {
+            this.showView('viewTeacher');
+          } else {
+            this.showView('viewStudent');
+          }
+        } else {
+          this.showView('viewLogin');
+        }
+      }
+
+      showView(viewId) {
+        ['viewLogin', 'viewStudent', 'viewTeacher'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(viewId).classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      switchLoginMode(mode) {
+        const tabStd = document.getElementById('tabStudentLogin');
+        const tabTch = document.getElementById('tabTeacherLogin');
+        const boxStd = document.getElementById('studentLoginBox');
+        const boxTch = document.getElementById('teacherLoginBox');
+
+        if (mode === 'student') {
+          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#FF8B8B] shadow-sm';
+          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]';
+          boxStd.classList.remove('hidden');
+          boxTch.classList.add('hidden');
+        } else {
+          tabTch.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-[#4A4040] shadow-sm';
+          tabStd.className = 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040]';
+          boxTch.classList.remove('hidden');
+          boxStd.classList.add('hidden');
+        }
+      }
+
+      // --- Student Login & PIN ---
+      renderLoginStudentGrid() {
+        const grid = document.getElementById('studentSelectionGrid');
+        grid.innerHTML = '';
+        this.users.forEach(student => {
+          const isSelected = this.selectedLoginStudent && this.selectedLoginStudent.id === student.id;
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = `p-2.5 rounded-2xl border text-center transition-all touch-btn flex flex-col items-center justify-center ${
+            isSelected 
+              ? 'bg-[#FFF0F0] border-[#FF8B8B] ring-2 ring-[#FF8B8B]/40 shadow-sm' 
+              : 'bg-white border-[#FFE3E3] hover:border-[#FFD1D1] hover:bg-[#FFF9F9]'
+          }`;
+          card.innerHTML = `
+            <span class="text-xl mb-1">${student.avatar || '🐰'}</span>
+            <span class="text-[11px] font-bold text-[#FF8B8B]">${student.number}번</span>
+            <span class="text-xs font-semibold text-[#4A4040] truncate max-w-full">${student.name}</span>
+          `;
+          card.onclick = () => this.selectLoginStudent(student);
+          grid.appendChild(card);
+        });
+      }
+
+      selectLoginStudent(student) {
+        this.selectedLoginStudent = student;
+        this.pinBuffer = '';
+        this.renderLoginStudentGrid();
+        this.updatePinDots();
+        document.getElementById('studentPasswordSection').classList.remove('hidden');
+      }
+
+      enterPin(digit) {
+        if (this.pinBuffer.length < 4) {
+          this.pinBuffer += digit;
+          this.updatePinDots();
+          if (this.pinBuffer.length === 4) {
+            setTimeout(() => this.submitStudentLogin(), 200);
+          }
+        }
+      }
+
+      clearPin() {
+        this.pinBuffer = '';
+        this.updatePinDots();
+      }
+
+      backspacePin() {
+        this.pinBuffer = this.pinBuffer.slice(0, -1);
+        this.updatePinDots();
+      }
+
+      updatePinDots() {
+        const dots = document.querySelectorAll('.pin-dot');
+        dots.forEach((dot, idx) => {
+          if (idx < this.pinBuffer.length) {
+            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-[#FF8B8B] scale-110 transition-all';
+          } else {
+            dot.className = 'pin-dot w-4 h-4 rounded-full border-2 border-[#FF8B8B] bg-white transition-all';
+          }
+        });
+      }
+
+      submitStudentLogin() {
+        if (!this.selectedLoginStudent) {
+          this.showToast('먼저 내 번호와 이름을 선택해주세요! 🌸', '⚠️');
+          return;
+        }
+
+        const expectedPin = this.selectedLoginStudent.password || '0000';
+        if (this.pinBuffer === expectedPin) {
+          this.currentUser = this.selectedLoginStudent;
+          this.pinBuffer = '';
+          this.selectedLoginStudent = null;
+          this.updatePinDots();
+          document.getElementById('studentPasswordSection').classList.add('hidden');
+          this.onLoginSuccess();
+          this.showToast(`${this.currentUser.name} 학생, 환영해요! 📮`, '💌');
+        } else {
+          this.showToast('비밀번호가 맞지 않아요. (초기: 0000)', '❌');
+          this.clearPin();
+        }
+      }
+
+      submitTeacherLogin() {
+        const pwInput = document.getElementById('teacherPwInput');
+        const pw = pwInput.value.trim();
+        const expected = this.settings.teacherPassword || '1234';
+
+        if (pw === expected) {
+          this.currentUser = {
+            id: 'teacher-admin',
+            name: '선생님',
+            role: 'teacher',
+            avatar: '👩‍🏫'
+          };
+          pwInput.value = '';
+          this.onLoginSuccess();
+          this.showToast('선생님 관리자 대시보드에 접속했습니다.', '👩‍🏫');
+        } else {
+          this.showToast('선생님 비밀번호가 올바르지 않습니다. (기본: 1234)', '❌');
+        }
+      }
+
+      onLoginSuccess() {
+        const badge = document.getElementById('userHeaderBadge');
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+
+        document.getElementById('userHeaderAvatar').textContent = this.currentUser.avatar || '🌸';
+        document.getElementById('userHeaderName').textContent = this.currentUser.name;
+
+        if (this.currentUser.role === 'student') {
+          document.getElementById('userHeaderScoreBadge').textContent = `칭찬 열매 ${this.currentUser.score || 0}개 ⭐`;
+          this.showView('viewStudent');
+          this.switchStudentTab('send');
+          this.renderStudentDashboard();
+        } else {
+          document.getElementById('userHeaderScoreBadge').textContent = '학급 관리자';
+          this.showView('viewTeacher');
+          this.renderTeacherDashboard();
+        }
+      }
+
+      logout() {
+        this.currentUser = null;
+        document.getElementById('userHeaderBadge').classList.add('hidden');
+        document.getElementById('userHeaderBadge').classList.remove('flex');
+        this.selectedLoginStudent = null;
+        this.clearPin();
+        document.getElementById('studentPasswordSection').classList.add('hidden');
+        this.renderLoginStudentGrid();
+        this.showView('viewLogin');
+        this.showToast('로그아웃 되었습니다.', '👋');
+      }
+
+      // --- Student Dashboard Handlers ---
+      renderStudentDashboard() {
+        this.renderStudentHeader();
+        this.renderFriendGrid();
+        this.renderStudentInbox();
+        this.renderClassRankings();
+      }
+
+      renderStudentHeader() {
+        if (!this.currentUser) return;
+        document.getElementById('studentAvatarLarge').textContent = this.currentUser.avatar || '🐰';
+        document.getElementById('studentNumberTag').textContent = `${this.currentUser.number}번`;
+        document.getElementById('studentNameDisplay').textContent = this.currentUser.name;
+        document.getElementById('studentScoreCount').textContent = `${this.currentUser.score || 0}개`;
+        document.getElementById('userHeaderScoreBadge').textContent = `칭찬 열매 ${this.currentUser.score || 0}개 ⭐`;
+
+        const todaySent = this.getTodaySentCount(this.currentUser.id);
+        const limit = this.settings.dailyLimit || 3;
+        const remaining = Math.max(0, limit - todaySent);
+        document.getElementById('studentDailyLimitBadge').textContent = `${remaining}/${limit}회`;
+      }
+
+      getTodaySentCount(studentId) {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        return this.praises.filter(p => p.senderId === studentId && p.createdAt >= startOfDay).length;
+      }
+
+      switchStudentTab(tab) {
+        ['send', 'inbox', 'rank'].forEach(t => {
+          const btn = document.getElementById(`btnStudentTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+          const view = document.getElementById(`studentTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+          if (t === tab) {
+            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-[#FF8B8B] text-white shadow-sm flex items-center justify-center gap-1.5';
+            view.classList.remove('hidden');
+          } else {
+            btn.className = 'flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-[#7A6E6E] hover:text-[#4A4040] flex items-center justify-center gap-1.5';
+            view.classList.add('hidden');
+          }
+        });
+
+        if (tab === 'inbox') this.renderStudentInbox();
+        if (tab === 'rank') this.renderClassRankings();
+      }
+
+      renderFriendGrid() {
+        const grid = document.getElementById('friendGrid');
+        grid.innerHTML = '';
+
+        // Classmates excluding self
+        const friends = this.users.filter(u => u.id !== this.currentUser.id);
+        friends.forEach(friend => {
+          const isSelected = this.selectedTargetFriend && this.selectedTargetFriend.id === friend.id;
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = `p-3 rounded-2xl border text-center transition-all touch-btn flex flex-col items-center justify-center ${
+            isSelected 
+              ? 'bg-[#FFF0F0] border-[#FF8B8B] ring-2 ring-[#FF8B8B]/40 shadow-sm scale-105' 
+              : 'bg-white border-[#FFE3E3] hover:border-[#FFD1D1] hover:bg-[#FFF9F9]'
+          }`;
+          card.innerHTML = `
+            <span class="text-2xl mb-1">${friend.avatar || '🐰'}</span>
+            <span class="text-[11px] font-bold text-[#FF8B8B]">${friend.number}번</span>
+            <span class="text-xs font-bold text-[#4A4040]">${friend.name}</span>
+          `;
+          card.onclick = () => {
+            this.selectedTargetFriend = friend;
+            document.getElementById('selectedFriendNotice').innerHTML = `
+              <span class="font-bold text-[#4A4040]">${friend.name}</span> 친구에게 보냅니다 💖
+            `;
+            this.renderFriendGrid();
+          };
+          grid.appendChild(card);
+        });
+      }
+
+      renderPraiseTags() {
+        const container = document.getElementById('praiseTagContainer');
+        container.innerHTML = '';
+        PRAISE_TAGS.forEach(tag => {
+          const isSelected = this.selectedTag === tag.id;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `px-3.5 py-2 rounded-2xl border text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all touch-btn ${
+            isSelected 
+              ? 'bg-[#FF8B8B] border-[#FF8B8B] text-white shadow-md scale-105' 
+              : 'bg-white border-[#FFE3E3] text-[#4A4040] hover:border-[#FFD1D1]'
+          }`;
+          btn.innerHTML = `<span>${tag.icon}</span><span>${tag.label}</span>`;
+          btn.onclick = () => {
+            this.selectedTag = tag.id;
+            this.renderPraiseTags();
+          };
+          container.appendChild(btn);
+        });
+      }
+
+      applyTemplate(text) {
+        const input = document.getElementById('praiseMessageInput');
+        input.value = text;
+        this.updateCharCount();
+        input.focus();
+      }
+
+      updateCharCount() {
+        const input = document.getElementById('praiseMessageInput');
+        const display = document.getElementById('charCountDisplay');
+        const count = input.value.length;
+        display.textContent = `${count} / 150자`;
+      }
+
+      // --- Submit Praise ---
+      async submitPraise() {
+        if (!this.currentUser) return;
+
+        // Check Target Friend
+        if (!this.selectedTargetFriend) {
+          this.showToast('칭찬을 전할 친구를 먼저 선택해주세요! 👭', '⚠️');
+          return;
+        }
+
+        // Check Message
+        const messageInput = document.getElementById('praiseMessageInput');
+        const message = messageInput.value.trim();
+        if (!message) {
+          this.showToast('친구에게 보낼 따뜻한 칭찬 메시지를 적어주세요! ✍️', '⚠️');
+          messageInput.focus();
+          return;
+        }
+
+        // Daily Limit Check
+        const todaySent = this.getTodaySentCount(this.currentUser.id);
+        const limit = this.settings.dailyLimit || 3;
+        if (todaySent >= limit) {
+          this.showToast(`오늘은 이미 칭찬을 ${limit}회 모두 보냈어요! 내일 또 전해보아요 🌱`, '💌');
+          return;
+        }
+
+        const newPraise = {
+          id: 'prs-' + Date.now(),
+          senderId: this.currentUser.id,
+          senderName: this.currentUser.name,
+          receiverId: this.selectedTargetFriend.id,
+          receiverName: this.selectedTargetFriend.name,
+          tag: this.selectedTag,
+          message: message,
+          createdAt: Date.now()
+        };
+
+        // Update Receiver & Sender Scores
+        const receiver = this.users.find(u => u.id === this.selectedTargetFriend.id);
+        if (receiver) {
+          receiver.score = (receiver.score || 0) + 1;
+        }
+
+        // Persist to Firebase or LocalStorage
+        if (this.isFirebaseReady && this.db) {
+          try {
+            await this.db.collection('praises').doc(newPraise.id).set(newPraise);
+            if (receiver) {
+              await this.db.collection('users').doc(receiver.id).update({ score: receiver.score });
+            }
+          } catch (err) {
+            console.error('Firebase save praise error:', err);
+          }
+        }
+
+        this.praises.unshift(newPraise);
+        this.saveLocalData();
+
+        // Celebration Confetti!
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 70,
+            spread: 60,
+            origin: { y: 0.7 },
+            colors: ['#FF8B8B', '#FFD1D1', '#FFD93D', '#FFA07A']
+          });
+        }
+
+        this.showToast(`${this.selectedTargetFriend.name} 친구에게 따뜻한 칭찬 편지를 보냈어요! 🎉`, '📮');
+
+        // Reset input fields
+        messageInput.value = '';
+        this.updateCharCount();
+        this.selectedTargetFriend = null;
+        document.getElementById('selectedFriendNotice').textContent = '친구를 탭하세요';
+        this.renderFriendGrid();
+        this.renderStudentHeader();
+      }
+
+      // --- Student Inbox ---
+      filterInbox(type) {
+        this.inboxFilter = type;
+        const btnAll = document.getElementById('inboxFilterAll');
+        const btnRecent = document.getElementById('inboxFilterRecent');
+
+        if (type === 'all') {
+          btnAll.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white';
+          btnRecent.className = 'px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]';
+        } else {
+          btnRecent.className = 'px-2.5 py-1 rounded-xl font-bold bg-[#FF8B8B] text-white';
+          btnAll.className = 'px-2.5 py-1 rounded-xl text-[#7A6E6E] hover:bg-[#FFF0F0]';
+        }
+        this.renderStudentInbox();
+      }
+
+      renderStudentInbox() {
+        if (!this.currentUser) return;
+        const list = document.getElementById('inboxLettersList');
+        const emptyState = document.getElementById('inboxEmptyState');
+        const totalCountBadge = document.getElementById('inboxTotalCountBadge');
+
+        let myPraises = this.praises.filter(p => p.receiverId === this.currentUser.id);
+        if (this.inboxFilter === 'recent') {
+          myPraises = [...myPraises].sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        totalCountBadge.textContent = `${myPraises.length}통`;
+
+        if (myPraises.length === 0) {
+          list.innerHTML = '';
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+        list.innerHTML = '';
+
+        myPraises.forEach(p => {
+          const tagInfo = PRAISE_TAGS.find(t => t.id === p.tag) || PRAISE_TAGS[0];
+          const sender = this.users.find(u => u.id === p.senderId);
+          const avatar = sender ? sender.avatar : '🌸';
+          const timeStr = this.formatRelativeTime(p.createdAt);
+
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-3xl p-5 border border-[#FFE3E3] shadow-soft hover:shadow-card transition-all flex flex-col justify-between';
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl">${avatar}</span>
+                  <div>
+                    <span class="text-xs font-bold text-[#4A4040]">${p.senderName} 친구가 보냄</span>
+                    <span class="block text-[10px] text-[#7A6E6E]">${timeStr}</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold ${tagInfo.bg} ${tagInfo.border} ${tagInfo.text} border">
+                  ${tagInfo.icon} ${tagInfo.label}
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-[#4A4040] leading-relaxed bg-[#FFF9F9] p-3.5 rounded-2xl border border-[#FFE3E3]/60 mb-3">
+                "${p.message}"
+              </p>
+            </div>
+            <div class="flex items-center justify-end">
+              <button onclick="app.reactHeart(this)" class="px-3 py-1.5 rounded-xl bg-[#FFF0F0] hover:bg-[#FFE3E3] text-[#FF8B8B] text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-heart"></i>
+                <span>고마워요!</span>
+              </button>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      reactHeart(btn) {
+        btn.innerHTML = `<i class="fa-solid fa-heart text-red-500 animate-ping"></i><span>고마워요! ❤️</span>`;
+        btn.classList.add('bg-red-50', 'border', 'border-red-200');
+        this.showToast('친구에게 고마운 마음을 전했어요! 💖', '❤️');
+      }
+
+      // --- Class Status & Rankings ---
+      renderClassRankings() {
+        const totalPraise = this.praises.length;
+        document.getElementById('classTotalPraiseCount').textContent = totalPraise;
+        
+        const goal = this.settings.classGoal || 100;
+        const percent = Math.min(100, Math.round((totalPraise / goal) * 100));
+        document.getElementById('classProgressBar').style.width = `${percent}%`;
+        document.getElementById('classProgressPercent').textContent = `${percent}%`;
+        document.getElementById('classGoalText').textContent = `목표 ${goal}개까지 앞으로 ${Math.max(0, goal - totalPraise)}개 남았어요!`;
+
+        const grid = document.getElementById('classmatesRankGrid');
+        grid.innerHTML = '';
+
+        // Sort students by score descending
+        const sorted = [...this.users].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+        sorted.forEach((student, idx) => {
+          let badge = '';
+          if (idx === 0) badge = '🥇 칭찬 왕';
+          else if (idx === 1) badge = '🥈 칭찬 요정';
+          else if (idx === 2) badge = '🥉 칭찬 천사';
+          else badge = '칭찬 꿈나무';
+
+          const card = document.createElement('div');
+          card.className = 'bg-[#FFF9F9] rounded-2xl p-3.5 border border-[#FFE3E3] text-center flex flex-col items-center justify-center hover:bg-white hover:shadow-soft transition';
+          card.innerHTML = `
+            <span class="text-3xl mb-1">${student.avatar || '🐰'}</span>
+            <span class="text-[10px] font-bold text-[#FF8B8B]">${student.number}번</span>
+            <span class="text-xs font-bold text-[#4A4040]">${student.name}</span>
+            <div class="mt-2 px-2 py-0.5 rounded-full bg-white border border-[#FFE8A3] text-[#B8860B] text-[11px] font-extrabold flex items-center gap-1">
+              <span>⭐</span>
+              <span>${student.score || 0}개</span>
+            </div>
+            <span class="text-[10px] text-[#7A6E6E] mt-1">${badge}</span>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      // --- Teacher Dashboard Handlers ---
+      renderTeacherDashboard() {
+        this.renderTeacherStats();
+        this.renderTeacherStudents();
+        this.renderTeacherLogs();
+        document.getElementById('teacherDailyLimitSelect').value = this.settings.dailyLimit || 3;
+      }
+
+      renderTeacherStats() {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const todayCount = this.praises.filter(p => p.createdAt >= startOfDay).length;
+        document.getElementById('statTodayPraises').textContent = todayCount;
+        document.getElementById('statTotalPraises').textContent = this.praises.length;
+
+        // Top student
+        const sorted = [...this.users].sort((a, b) => (b.score || 0) - (a.score || 0));
+        if (sorted.length > 0 && (sorted[0].score || 0) > 0) {
+          document.getElementById('statTopStudent').textContent = `${sorted[0].name} (${sorted[0].score}개)`;
+        } else {
+          document.getElementById('statTopStudent').textContent = '활동 대기중';
+        }
+
+        // Top tag
+        const tagCounts = {};
+        this.praises.forEach(p => {
+          tagCounts[p.tag] = (tagCounts[p.tag] || 0) + 1;
+        });
+        let bestTag = '친절해요';
+        let max = 0;
+        for (const t in tagCounts) {
+          if (tagCounts[t] > max) {
+            max = tagCounts[t];
+            bestTag = t;
+          }
+        }
+        document.getElementById('statTopTag').textContent = bestTag;
+      }
+
+      switchTeacherSubtab(tab) {
+        const btnScore = document.getElementById('tabTeacherScore');
+        const btnLog = document.getElementById('tabTeacherLog');
+        const viewScore = document.getElementById('teacherSubtabScores');
+        const viewLog = document.getElementById('teacherSubtabLogs');
+
+        if (tab === 'scores') {
+          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2';
+          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2';
+          viewScore.classList.remove('hidden');
+          viewLog.classList.add('hidden');
+        } else {
+          btnLog.className = 'flex-1 sm:flex-initial px-6 py-4 font-bold text-sm text-[#FF8B8B] border-b-2 border-[#FF8B8B] bg-white transition flex items-center justify-center gap-2';
+          btnScore.className = 'flex-1 sm:flex-initial px-6 py-4 font-medium text-sm text-[#7A6E6E] hover:text-[#4A4040] transition flex items-center justify-center gap-2';
+          viewLog.classList.remove('hidden');
+          viewScore.classList.add('hidden');
+          this.renderTeacherLogs();
+        }
+      }
+
+      renderTeacherStudents() {
+        const query = (document.getElementById('teacherStudentSearch').value || '').trim().toLowerCase();
+        const tbody = document.getElementById('teacherStudentTableBody');
+        tbody.innerHTML = '';
+
+        const filtered = this.users.filter(u => 
+          u.name.toLowerCase().includes(query) || String(u.number).includes(query)
+        );
+
+        filtered.forEach(student => {
+          const received = this.praises.filter(p => p.receiverId === student.id).length;
+          const sent = this.praises.filter(p => p.senderId === student.id).length;
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-[#FFF9F9] transition-colors';
+          tr.innerHTML = `
+            <td class="py-3.5 px-4 font-bold text-[#FF8B8B]">${student.number}번</td>
+            <td class="py-3.5 px-4">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">${student.avatar || '🐰'}</span>
+                <span class="font-bold text-[#4A4040]">${student.name}</span>
+              </div>
+            </td>
+            <td class="py-3.5 px-4 text-center font-extrabold text-[#B8860B]">
+              <span class="px-2 py-0.5 rounded-full bg-[#FFF9F0] border border-[#FFE8A3]">
+                ⭐ ${student.score || 0}점
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-center text-[#7A6E6E]">${received}통</td>
+            <td class="py-3.5 px-4 text-center text-[#7A6E6E]">${sent}회</td>
+            <td class="py-3.5 px-4 text-center">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="app.adjustScore('${student.id}', -1)" class="w-7 h-7 rounded-lg bg-[#FFF0F0] text-[#FF8B8B] hover:bg-[#FFE3E3] font-bold">-1</button>
+                <button onclick="app.adjustScore('${student.id}', 1)" class="w-7 h-7 rounded-lg bg-[#FFF0F0] text-[#FF8B8B] hover:bg-[#FFE3E3] font-bold">+1</button>
+                <button onclick="app.promptEditScore('${student.id}')" class="px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#4A4040] text-xs font-semibold">직접 입력</button>
+              </div>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <div class="inline-flex items-center gap-1.5">
+                <button onclick="app.resetStudentPassword('${student.id}')" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 text-xs font-medium" title="비밀번호 0000으로 초기화">
+                  PW 초기화
+                </button>
+                <button onclick="app.deleteStudent('${student.id}')" class="w-7 h-7 rounded-lg text-rose-500 hover:bg-rose-50 flex items-center justify-center transition" title="학생 삭제">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async adjustScore(studentId, delta) {
+        const student = this.users.find(u => u.id === studentId);
+        if (!student) return;
+        student.score = Math.max(0, (student.score || 0) + delta);
+
+        if (this.isFirebaseReady && this.db) {
+          try {
+            await this.db.collection('users').doc(student.id).update({ score: student.score });
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+        this.saveLocalData();
+        this.renderTeacherStudents();
+        this.renderTeacherStats();
+        this.showToast(`${student.name} 학생 점수: ${student.score}점`, '⭐');
+      }
+
+      async promptEditScore(studentId) {
+        const student = this.users.find(u => u.id === studentId);
+        if (!student) return;
+        const val = prompt(`${student.name} 학생의 새 칭찬 점수를 입력하세요:`, student.score || 0);
+        if (val !== null && !isNaN(val)) {
+          student.score = Math.max(0, parseInt(val, 10));
+          if (this.isFirebaseReady && this.db) {
+            await this.db.collection('users').doc(student.id).update({ score: student.score });
+          }
+          this.saveLocalData();
+          this.renderTeacherStudents();
+          this.renderTeacherStats();
+          this.showToast(`${student.name} 학생 점수 변경 완료`, '✅');
+        }
+      }
+
+      async resetStudentPassword(studentId) {
+        const student = this.users.find(u => u.id === studentId);
+        if (!student) return;
+        if (confirm(`${student.name} 학생의 비밀번호를 기본 '0000'으로 초기화할까요?`)) {
+          student.password = '0000';
+          if (this.isFirebaseReady && this.db) {
+            await this.db.collection('users').doc(student.id).update({ password: '0000' });
+          }
+          this.saveLocalData();
+          this.showToast(`${student.name} 학생의 비밀번호가 0000으로 초기화되었습니다.`, '🔑');
+        }
+      }
+
+      async deleteStudent(studentId) {
+        const student = this.users.find(u => u.id === studentId);
+        if (!student) return;
+        if (confirm(`${student.name} 학생을 명부에서 삭제하시겠습니까?`)) {
+          this.users = this.users.filter(u => u.id !== studentId);
+          if (this.isFirebaseReady && this.db) {
+            await this.db.collection('users').doc(studentId).delete();
+          }
+          this.saveLocalData();
+          this.renderTeacherStudents();
+          this.renderLoginStudentGrid();
+          this.showToast('학생 정보가 삭제되었습니다.', '🗑️');
+        }
+      }
+
+      openAddStudentModal() {
+        document.getElementById('newStudentNumber').value = this.users.length + 1;
+        document.getElementById('newStudentName').value = '';
+        this.newAvatarChoice = '🐱';
+        this.highlightAvatarChoice('🐱');
+        document.getElementById('addStudentModal').classList.remove('hidden');
+      }
+
+      selectNewAvatar(emoji) {
+        this.newAvatarChoice = emoji;
+        this.highlightAvatarChoice(emoji);
+      }
+
+      highlightAvatarChoice(emoji) {
+        document.querySelectorAll('.avatar-opt').forEach(btn => {
+          if (btn.textContent.trim() === emoji) {
+            btn.className = 'avatar-opt p-1.5 rounded-xl border-2 border-[#FF8B8B] bg-[#FFF0F0] scale-110';
+          } else {
+            btn.className = 'avatar-opt p-1.5 rounded-xl border border-[#FFE3E3] hover:bg-[#FFF0F0]';
+          }
+        });
+      }
+
+      async confirmAddStudent() {
+        const numInput = document.getElementById('newStudentNumber');
+        const nameInput = document.getElementById('newStudentName');
+        const num = parseInt(numInput.value, 10);
+        const name = nameInput.value.trim();
+
+        if (!num || !name) {
+          alert('출석 번호와 이름을 모두 입력해주세요.');
+          return;
+        }
+
+        const newStudent = {
+          id: 'std-' + Date.now(),
+          number: num,
+          name: name,
+          avatar: this.newAvatarChoice || '🐱',
+          password: '0000',
+          role: 'student',
+          score: 0
+        };
+
+        this.users.push(newStudent);
+        this.users.sort((a, b) => a.number - b.number);
+
+        if (this.isFirebaseReady && this.db) {
+          await this.db.collection('users').doc(newStudent.id).set(newStudent);
+        }
+
+        this.saveLocalData();
+        document.getElementById('addStudentModal').classList.add('hidden');
+        this.renderTeacherStudents();
+        this.renderLoginStudentGrid();
+        this.showToast(`${name} 학생이 새로 등록되었습니다. (초기 PW: 0000)`, '🎉');
+      }
+
+      // --- Teacher Logs ---
+      renderTeacherLogs() {
+        const query = (document.getElementById('teacherLogSearch').value || '').trim().toLowerCase();
+        const tagFilter = document.getElementById('teacherLogTagFilter').value;
+        const list = document.getElementById('teacherLogsList');
+        list.innerHTML = '';
+
+        let filtered = this.praises.filter(p => {
+          const matchQuery = !query || 
+            p.senderName.toLowerCase().includes(query) || 
+            p.receiverName.toLowerCase().includes(query) || 
+            p.message.toLowerCase().includes(query);
+          const matchTag = !tagFilter || p.tag === tagFilter;
+          return matchQuery && matchTag;
+        });
+
+        document.getElementById('teacherLogCountBadge').textContent = `총 ${filtered.length}건 기록`;
+
+        if (filtered.length === 0) {
+          list.innerHTML = `
+            <div class="p-8 text-center text-xs text-[#7A6E6E] bg-[#FFF9F9] rounded-2xl border border-[#FFE3E3]">
+              조건에 맞는 칭찬 기록이 없습니다.
+            </div>
+          `;
+          return;
+        }
+
+        filtered.forEach(p => {
+          const tagInfo = PRAISE_TAGS.find(t => t.id === p.tag) || PRAISE_TAGS[0];
+          const timeStr = new Date(p.createdAt).toLocaleString('ko-KR', {
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          const item = document.createElement('div');
+          item.className = 'p-4 rounded-2xl border border-[#FFE3E3] bg-[#FFF9F9] hover:bg-white hover:shadow-soft transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3';
+          item.innerHTML = `
+            <div class="space-y-1.5 flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[#FF8B8B] text-xs">${p.senderName}</span>
+                <i class="fa-solid fa-arrow-right text-[10px] text-[#7A6E6E]"></i>
+                <span class="font-bold text-[#4A4040] text-xs">${p.receiverName}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tagInfo.bg} ${tagInfo.text} border ${tagInfo.border}">
+                  ${tagInfo.icon} ${tagInfo.label}
+                </span>
+                <span class="text-[10px] text-[#7A6E6E] ml-auto sm:ml-0">${timeStr}</span>
+              </div>
+              <p class="text-xs sm:text-sm text-[#4A4040] bg-white p-2.5 rounded-xl border border-[#FFE3E3]/60">
+                "${p.message}"
+              </p>
+            </div>
+            <button onclick="app.deletePraise('${p.id}')" class="px-2.5 py-1.5 rounded-xl text-rose-500 hover:bg-rose-50 border border-rose-200 text-xs font-semibold whitespace-nowrap transition flex items-center gap-1">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>부적절 내용 삭제</span>
+            </button>
+          `;
+          list.appendChild(item);
+        });
+      }
+
+      async deletePraise(praiseId) {
+        if (!confirm('이 칭찬 편지를 삭제하시겠습니까? 부적절하거나 잘못 보낸 편지는 삭제할 수 있습니다.')) return;
+
+        const target = this.praises.find(p => p.id === praiseId);
+        if (target) {
+          // Adjust receiver score down by 1 if appropriate
+          const receiver = this.users.find(u => u.id === target.receiverId);
+          if (receiver && (receiver.score || 0) > 0) {
+            receiver.score -= 1;
+            if (this.isFirebaseReady && this.db) {
+              this.db.collection('users').doc(receiver.id).update({ score: receiver.score });
+            }
+          }
+        }
+
+        this.praises = this.praises.filter(p => p.id !== praiseId);
+        if (this.isFirebaseReady && this.db) {
+          await this.db.collection('praises').doc(praiseId).delete();
+        }
+
+        this.saveLocalData();
+        this.renderTeacherLogs();
+        this.renderTeacherStats();
+        this.showToast('칭찬 편지가 삭제되었습니다.', '🗑️');
+      }
+
+      async updateDailyLimit(val) {
+        const limit = parseInt(val, 10) || 3;
+        this.settings.dailyLimit = limit;
+        if (this.isFirebaseReady && this.db) {
+          await this.db.collection('settings').doc('config').update({ dailyLimit: limit });
+        }
+        this.saveLocalData();
+        this.showToast(`1일 칭찬 제한이 ${limit}회로 변경되었습니다.`, '⚙️');
+      }
+
+      exportPraisesCSV() {
+        if (this.praises.length === 0) {
+          alert('저장할 칭찬 데이터가 없습니다.');
+          return;
+        }
+
+        let csv = '\uFEFF날짜,보낸학생,받는학생,카테고리,칭찬내용\n';
+        this.praises.forEach(p => {
+          const dateStr = new Date(p.createdAt).toLocaleString('ko-KR');
+          const cleanMsg = `"${(p.message || '').replace(/"/g, '""')}"`;
+          csv += `"${dateStr}","${p.senderName}","${p.receiverName}","${p.tag}",${cleanMsg}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `우리반_칭찬기록_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        this.showToast('칭찬 기록 CSV 파일이 다운로드되었습니다.', '📥');
+      }
+
+      // --- Firebase Modal Operations ---
+      openFirebaseModal() {
+        document.getElementById('firebaseModal').classList.remove('hidden');
+      }
+
+      closeFirebaseModal() {
+        document.getElementById('firebaseModal').classList.add('hidden');
+      }
+
+      saveFirebaseConfig() {
+        const config = {
+          apiKey: document.getElementById('cfgApiKey').value.trim(),
+          authDomain: document.getElementById('cfgAuthDomain').value.trim(),
+          projectId: document.getElementById('cfgProjectId').value.trim(),
+          storageBucket: document.getElementById('cfgStorageBucket').value.trim(),
+          messagingSenderId: document.getElementById('cfgSenderId').value.trim(),
+          appId: document.getElementById('cfgAppId').value.trim()
+        };
+
+        if (!config.apiKey || !config.projectId) {
+          alert('apiKey와 projectId는 필수 입력 항목입니다.');
+          return;
+        }
+
+        localStorage.setItem('praise_mailbox_fb_cfg', JSON.stringify(config));
+        this.closeFirebaseModal();
+        this.initFirebase();
+        this.showToast('Firebase 설정이 저장되었습니다. 연결을 시도합니다...', '🔥');
+      }
+
+      resetFirebaseToLocal() {
+        localStorage.removeItem('praise_mailbox_fb_cfg');
+        document.getElementById('cfgApiKey').value = '';
+        document.getElementById('cfgAuthDomain').value = '';
+        document.getElementById('cfgProjectId').value = '';
+        document.getElementById('cfgStorageBucket').value = '';
+        document.getElementById('cfgSenderId').value = '';
+        document.getElementById('cfgAppId').value = '';
+        this.isFirebaseReady = false;
+        this.setFirebaseStatus(false, '로컬 모드');
+        this.closeFirebaseModal();
+        this.showToast('로컬 모드로 전환되었습니다. 브라우저 저장소에 보관됩니다.', '💾');
+      }
+
+      // --- Utilities ---
+      formatRelativeTime(timestamp) {
+        const diff = Date.now() - timestamp;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        if (minutes < 1) return '방금 전';
+        if (minutes < 60) return `${minutes}분 전`;
+        if (hours < 24) return `${hours}시간 전`;
+        if (days < 7) return `${days}일 전`;
+        return new Date(timestamp).toLocaleDateString('ko-KR');
+      }
+
+      showToast(msg, icon = '✨') {
+        const toast = document.getElementById('toastNotification');
+        document.getElementById('toastMessage').textContent = msg;
+        document.getElementById('toastIcon').textContent = icon;
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        if (this.toastTimer) clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        }, 3000);
+      }
+
+      bindEvents() {
+        const input = document.getElementById('praiseMessageInput');
+        input.addEventListener('input', () => this.updateCharCount());
+
+        // Keypad keyboard support
+        window.addEventListener('keydown', (e) => {
+          if (!this.selectedLoginStudent) return;
+          if (e.key >= '0' && e.key <= '9') {
+            this.enterPin(e.key);
+          } else if (e.key === 'Backspace') {
+            this.backspacePin();
+          } else if (e.key === 'Escape') {
+            this.clearPin();
+          }
+        });
+      }
+    }
+
+    // Global application instance
+    const app = new PraiseApp();
+  </script>
+</body>
+</html>
